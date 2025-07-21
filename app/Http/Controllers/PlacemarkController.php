@@ -4,18 +4,18 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
-use PDF;
 use App\Models\Placemark;
-use Intervention\Image\Facades\Image;
 use Spatie\Browsershot\Browsershot;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Storage;
 
 class PlacemarkController extends Controller
 {
-    // الصفحة الرئيسية لرفع الملف
-    public function index()
-    {
-        return view('placemarks.upload');
-    }
+    /*
+    |--------------------------------------------------------------------------
+    | تحميل واستعراض ملف Excel
+    |--------------------------------------------------------------------------
+    */
 
     // صفحة رفع ملف Excel
     public function upload()
@@ -23,118 +23,129 @@ class PlacemarkController extends Controller
         return view('placemarks.upload');
     }
 
-    // قراءة الملف وعرض البيانات بدون تخزين
-    public function import(Request $request)
+    // قراءة الملف واستعراض البيانات بدون حفظ
+
+public function import(Request $request)
+{
+    $request->validate([
+        'excel_file' => 'required|file|mimes:xlsx,xls',
+    ]);
+
+    $rows = Excel::toArray([], $request->file('excel_file'));
+    $data = $rows[0] ?? [];
+
+    $headers = array_map('trim', $data[0] ?? []);
+    $records = array_slice($data, 1);
+
+    // ✅ تحويل الأرقام العربية في كل الخلايا
+    $convertedRecords = array_map(function ($row) {
+        return array_map([$this, 'convertArabicToEnglishNumbers'], $row);
+    }, $records);
+
+    return view('placemarks.display', [
+        'headers' => $headers,
+        'records' => $convertedRecords,
+    ]);
+}
+
+private function convertArabicToEnglishNumbers($string)
+{
+    $arabic = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+    $english = ['0','1','2','3','4','5','6','7','8','9'];
+    return str_replace($arabic, $english, $string);
+}
+
+    /*
+    |--------------------------------------------------------------------------
+    | توليد الشهادة من البيانات
+    |--------------------------------------------------------------------------
+    */
+
+    // عرض نموذج الشهادة للتعديل قبل التوليد
+    public function previewCertificate(Request $request)
     {
-        $request->validate([
-            'excel_file' => 'required|file|mimes:xlsx,xls',
-        ]);
+        $data = $request->input('data');
+        return view('placemarks.certificate_form', ['placemark' => $data]);
+    }
+public function generateImageFromHTML(Request $request)
+{
+    $data = $request->input('data', []);
 
-        $rows = Excel::toArray([], $request->file('excel_file'));
-        $data = $rows[0] ?? [];
-
-        $headers = array_map('trim', $data[0] ?? []);
-        $records = array_slice($data, 1);
-
-        return view('placemarks.display', compact('headers', 'records'));
+    // حفظ الصور المرفوعة (لو في)
+    for ($i = 1; $i <= 4; $i++) {
+        $fileKey = "image_$i";
+        if ($request->hasFile($fileKey) && $request->file($fileKey)->isValid()) {
+            $path = $request->file($fileKey)->store('certificates', 'public');
+            $data["image{$i}"] = asset('storage/' . $path); // استخدم رابط مباشر
+        }
     }
 
+    $html = view('placemarks.certificate_image', compact('data'))->render();
+
+    $filename = 'certificate_' . time() . '.png';
+    $path = public_path('certificates/' . $filename);
+
+    Browsershot::html($html)
+        ->format('A3')
+        ->margins(0, 0, 0, 0)
+        ->windowSize(2480, 3508)
+        ->save($path);
+
+    return redirect()->route('placemarks.showCertificateImage', ['filename' => $filename]);
+}
 
 
-    // عرض نموذج الشهادة (قبل التوليد)
-  public function previewCertificate(Request $request)
-   {
-       $data = $request->input('data');
-        return view('placemarks.certificate_form', ['placemark' => $data]);
-   }
 
-    // // توليد شهادة PDF
-    // public function certificate($id)
-    // {
-    //     $placemark = Placemark::findOrFail($id);
+    // عرض صورة الشهادة بعد التوليد
+public function showCertificateImage($filename)
+{
+    $imageUrl = asset('certificates/' . $filename);
+    return view('placemarks.show_certificate_image', compact('imageUrl'));
+}
 
-    //     $pdf = PDF::loadView('placemarks.certificate', ['placemark' => $placemark])
-    //               ->setPaper('a3', 'landscape');
 
-    //     return $pdf->stream('certificate_'.$placemark->name.'.pdf');
-    // }
+    /*
+    |--------------------------------------------------------------------------
+    | حفظ البيانات في قاعدة البيانات
+    |--------------------------------------------------------------------------
+    */
 
-    // ✅ توليد صورة باستخدام Intervention Image مع خلفية صورة
-    // public function generateCertificateImage(Request $request)
-    // {
-    //     $data = $request->input('data');
-
-    //     $img = Image::make(public_path('images/certificate_bg.png'));
-
-    //     // إضافة الاسم
-    //     $img->text($data['الاسم'] ?? '', 1000, 800, function($font) {
-    //         $font->file(public_path('fonts/arial.ttf'));
-    //         $font->size(48);
-    //         $font->color('#000');
-    //         $font->align('right');
-    //         $font->valign('top');
-    //     });
-
-    //     // إضافة رقم البطاقة
-    //     $img->text($data['رقم بطاقة المواطن'] ?? '', 1000, 900, function($font) {
-    //         $font->file(public_path('fonts/arial.ttf'));
-    //         $font->size(36);
-    //         $font->color('#000');
-    //         $font->align('right');
-    //         $font->valign('top');
-    //     });
-
-    //     // إدراج صور إضافية
-    //     for ($i = 1; $i <= 4; $i++) {
-    //         $key = "صورة $i";
-    //         if (!empty($data[$key])) {
-    //             try {
-    //                 $smallImg = Image::make($data[$key])->resize(400, 300);
-    //                 $x = 1000 + ($i - 1) * 420;
-    //                 $y = 1200;
-    //                 $img->insert($smallImg, 'top-left', $x, $y);
-    //             } catch (\Exception $e) {
-    //                 // تجاهل الصورة إذا كانت غير صالحة
-    //             }
-    //         }
-    //     }
-
-    //     $filename = 'certificate_'.time().'.png';
-    //     $img->save(public_path('certificates/' . $filename));
-
-    //     return response()->json([
-    //         'message' => 'تم توليد الشهادة بنجاح',
-    //         'image_url' => asset('certificates/' . $filename),
-    //     ]);
-    // }
-
-    // ✅ توليد صورة باستخدام HTML + CSS عبر Browsershot
-    public function generateImageFromHTML(Request $request)
+    public function saveData(Request $request)
     {
         $data = $request->input('data');
 
-        $html = view('placemarks.certificate_image', compact('data'))->render();
+        $placemark = new Placemark();
 
-        $filename = 'certificate_' . time() . '.png';
-        $path = public_path('certificates/' . $filename);
+        // الحقول النصية
+        $placemark->name         = $data['name'] ?? $data['الاسم'] ?? null;
+        $placemark->national_id  = $data['national_id'] ?? $data['رقم بطاقة المواطن'] ?? null;
+        $placemark->area_m2      = $data['area_m2'] ?? $data['المساحة'] ?? null;
+        $placemark->address      = $data['address'] ?? $data['عنوان القطعة'] ?? null;
+        $placemark->description  = $data['description'] ?? $data['الوصف'] ?? null;
+        $placemark->supplier     = $data['supplier'] ?? $data['جهة التوريد'] ?? null;
+        $placemark->geometry     = $data['geometry'] ?? null;
+        $placemark->notes        = $data['notes'] ?? $data['ملاحظات'] ?? null;
+        $placemark->inspector    = $data['inspector'] ?? $data['المفتش'] ?? null;
 
-        Browsershot::html($html)
-            ->format('A3')
-            ->margins(0, 0, 0, 0)
-            ->windowSize(2480, 3508)
-            ->save($path);
+        // الصور (image1 إلى image8)
+        for ($i = 1; $i <= 8; $i++) {
+            $key = "image{$i}";
+            $placemark->$key = $data[$key] ?? $data["صورة {$i}"] ?? null;
+        }
 
-        // إعادة توجيه المستخدم لعرض الصورة
-        return redirect()->route('placemarks.showCertificateImage', ['filename' => $filename]);
+        $placemark->save();
+
+        return redirect()->back()->with('success', '✅ تم حفظ البيانات في قاعدة البيانات بنجاح.');
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | عرض صفحة layout تجريبية (اختياري)
+    |--------------------------------------------------------------------------
+    */
 
-
-    
-    // ✅ صفحة عرض صورة الشهادة
-    public function showCertificateImage($filename)
+    public function layout()
     {
-        $imageUrl = asset('certificates/' . $filename);
-        return view('placemarks.show_certificate_image', compact('imageUrl'));
+        return view('layout');
     }
 }
