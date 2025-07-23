@@ -148,4 +148,23 @@ public function showCertificateImage($filename)
     {
         return view('layout');
     }
+
+    
+
+
+    public function manualForm()
+{
+    return view('placemarks.manual_form');
+}
+
+public function generateManualCertificate(Request $request)
+{
+    $data = $request->input('data'); // بيانات الشهادة المدخلة
+
+    return view('placemarks.certificate_image', [
+        'data' => $data,
+        'filename' => null, // أو ضع اسم عشوائي لو تحفظ الصورة لاحقاً
+    ]);
+}
+
 }

@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PlacemarkController;
+use App\Http\Controllers\ManualController;
+use App\Http\Controllers\TrackingCertificateController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,3 +40,19 @@ Route::get('/layout', [PlacemarkController::class, 'layout'])
     ->name('layout');
 
 
+Route::get('/manual/manual_form', [ManualController::class, 'manualForm'])->name('placemarks.manual');
+
+Route::post('/placemarks/manual/generate', [PlacemarkController::class, 'generateManualCertificate'])->name('placemarks.manual.generate');
+
+
+
+Route::get('/manual', [ManualController::class, 'chooseType'])->name('manual.choose');
+
+Route::get('/manual/survey', [ManualController::class, 'surveyForm'])->name('manual.survey');
+Route::get('/manual/utilities', [ManualController::class, 'utilitiesForm'])->name('manual.utilities');
+Route::get('/manual/tracking', [ManualController::class, 'trackingForm'])->name('manual.tracking');
+
+
+
+Route::get('/tracking-certificates/create', [TrackingCertificateController::class, 'create'])->name('tracking_certificates.create');
+Route::post('/tracking-certificates/store', [TrackingCertificateController::class, 'store'])->name('tracking_certificates.store');

@@ -23,18 +23,15 @@
     <h4>القائمة</h4>
 
     <a href="{{ route('placemarks.upload') }}" class="active">
-      <i class="fas fa-home"></i> <span>الرئيسية</span>
+      <i class="fas fa-home"></i> <span>ادخال اكسيل</span>
     </a>
 
-      <i class="fas fa-chalkboard-teacher"></i> <span>المعلمون</span>
+  
+    <a href="{{ route('manual.choose') }}">
+      <i class="fas fa-pen"></i> <span>ادخال يدوي</span>
     </a>
 
-  <i class="fas fa-user-graduate"></i> <span>الطلاب</span>
-</a>
 
-
-      <i class="fas fa-users"></i> <span>أولياء الأمور</span>
-    </a>
 
 
   </div>

@@ -198,7 +198,7 @@
 
             <div class="boxes">
                 <div class="drop-container">
-                    <img id="certificate" src="/certificates/{{ $filename }}" alt="شهادة">
+                    <img id="certificate" src="{{ $imageUrl ?? '' }}" alt="شهادة">
                     <div id="drop-area" ondragover="event.preventDefault()" ondrop="handleDrop(event)">
                         🖼️ اسحب صورة هنا
                     </div>
