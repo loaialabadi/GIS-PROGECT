@@ -6,15 +6,26 @@ use Illuminate\Database\Eloquent\Model;
 
 class TrackingCertificate extends Model
 {
-    protected $fillable = [
-        'client_name',
-        'national_id',
-        'transaction_id',
-        'building_description',
-        'project_name',
-        'area',
-        'tracking_date',
-        'notes',
-        'inspector_name',
-    ];
+// app/Models/TrackingCertificate.php
+protected $fillable = [
+    'transaction_id',
+    'client_name',
+    'national_id',
+    'transaction_number',
+    'building_description',
+    'center_name',
+    'area',
+    'tracking_date',
+    'notes',
+    'inspector_name',
+    'tracking_status',  // هنا تضيفه ليتم الحفظ
+];
+
+
+
+public function transaction()
+{
+    return $this->belongsTo(Transaction::class);
+}
+
 }

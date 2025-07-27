@@ -152,10 +152,6 @@ public function showCertificateImage($filename)
     
 
 
-    public function manualForm()
-{
-    return view('placemarks.manual_form');
-}
 
 public function generateManualCertificate(Request $request)
 {

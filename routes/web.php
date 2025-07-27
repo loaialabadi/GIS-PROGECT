@@ -56,3 +56,13 @@ Route::get('/manual/tracking', [ManualController::class, 'trackingForm'])->name(
 
 Route::get('/tracking-certificates/create', [TrackingCertificateController::class, 'create'])->name('tracking_certificates.create');
 Route::post('/tracking-certificates/store', [TrackingCertificateController::class, 'store'])->name('tracking_certificates.store');
+
+
+Route::post('/tracking-certificates/preview', [TrackingCertificateController::class, 'previewForm'])
+    ->name('manual.preview');
+
+
+
+
+Route::post('/tracking_certificates/{id}/save_pdf_path', [TrackingCertificateController::class, 'savePdfPath'])
+    ->name('tracking_certificates.save_pdf_path');
