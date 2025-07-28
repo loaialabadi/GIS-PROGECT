@@ -16,6 +16,9 @@ return new class extends Migration
         Schema::create('survey_certificates', function (Blueprint $table) {
             $table->id();
             $table->foreignId('transaction_id')->constrained()->onDelete('cascade');
+            
+                        $table->string('transaction_number')->unique();
+
             $table->string('applicant_name');           // اسم صاحب الطلب
             $table->string('location_address')->nullable();   // عنوان القطعة
             $table->string('location_description')->nullable();  // وصف القطعة

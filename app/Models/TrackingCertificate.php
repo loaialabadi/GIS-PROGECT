@@ -18,6 +18,7 @@ protected $fillable = [
     'tracking_date',
     'notes',
     'inspector_name',
+    'gis_name',
     'tracking_status',  // هنا تضيفه ليتم الحفظ
 ];
 

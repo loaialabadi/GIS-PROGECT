@@ -83,13 +83,31 @@
         </div>
 
         <!-- حقول حالة التتبع 5 -->
-        <h5>حالة التتبع</h5>
-        @for ($i = 0; $i < 5; $i++)
-            <div class="mb-3">
-                <label for="tracking_status_{{ $i }}" class="form-label">الوصف {{ $i + 1 }}</label>
-                <input type="text" id="tracking_status_{{ $i }}" name="tracking_status[]" class="form-control" value="{{ old('tracking_status.' . $i) }}">
-            </div>
-        @endfor
+<h5>حالة التتبع حسب التاريخ</h5>
+
+@php
+    $defaultDates = ['11-2020', '4-2023', '3-2024', '3-2025'];
+    $trackingStatus = isset($certificate) && $certificate->tracking_status
+        ? json_decode($certificate->tracking_status, true)
+        : [];
+@endphp
+
+@foreach($defaultDates as $date)
+    <div class="mb-3">
+        <label for="tracking_status_{{ str_replace('-', '_', $date) }}" class="form-label">
+            الوصف بتاريخ {{ $date }}
+        </label>
+        <input 
+            type="text" 
+            id="tracking_status_{{ str_replace('-', '_', $date) }}" 
+            name="tracking_status[{{ $date }}]" 
+            class="form-control" 
+            value="{{ old('tracking_status.' . $date, $trackingStatus[$date] ?? '') }}" 
+            placeholder="أدخل الوصف">
+    </div>
+@endforeach
+
+
 
         <!-- بيانات GIS -->
         <h5>بيانات GIS</h5>

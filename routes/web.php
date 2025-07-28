@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PlacemarkController;
 use App\Http\Controllers\ManualController;
 use App\Http\Controllers\TrackingCertificateController;
+    use App\Http\Controllers\CertificateSearchController;
 
 /*
 |--------------------------------------------------------------------------
@@ -66,3 +67,14 @@ Route::post('/tracking-certificates/preview', [TrackingCertificateController::cl
 
 Route::post('/tracking_certificates/{id}/save_pdf_path', [TrackingCertificateController::class, 'savePdfPath'])
     ->name('tracking_certificates.save_pdf_path');
+
+
+
+    // ✅ البحث عن الشهادات حسب رقم المعاملة
+
+
+Route::get('/search', [CertificateSearchController::class, 'showSearchForm'])->name('certificates.search.form');
+Route::post('/search', [CertificateSearchController::class, 'searchByTransactionNumber'])->name('certificates.search');
+
+Route::get('/certificates/{type}/{id}/edit', [CertificateSearchController::class, 'edit'])->name('certificates.edit');
+Route::post('/certificates/{type}/{id}/update', [CertificateSearchController::class, 'update'])->name('certificates.update');

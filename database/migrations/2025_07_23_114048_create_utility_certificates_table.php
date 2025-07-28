@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('utility_certificates', function (Blueprint $table) {
             $table->id();
             $table->foreignId('transaction_id')->constrained()->onDelete('cascade');
+            $table->string('transaction_number')->unique();
+
             $table->string('site_name');      // اسم الموقع
             $table->string('street')->nullable();   // الشارع
             $table->string('city')->nullable();     // المدينة

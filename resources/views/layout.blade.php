@@ -31,6 +31,8 @@
       <i class="fas fa-pen"></i> <span>ادخال يدوي</span>
     </a>
 
+    <a href="{{ route('certificates.search.form') }}">
+      <i class="fas fa-list"></i> <span> بحث</span>
 
 
 

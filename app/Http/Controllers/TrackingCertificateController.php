@@ -17,34 +17,43 @@ class TrackingCertificateController extends Controller
     }
 
 
-    public function store(Request $request)
-{
-    // أولاً التحقق من البيانات
-$validated = $request->validate([
-    'client_name' => 'required|string|max:255',
-    'national_id' => 'required|string|max:20',
-    'transaction_number' => 'required|string|max:255',
-    'building_description' => 'nullable|string|max:255',
-    'center_name' => 'nullable|string|max:255',
-    'area' => 'nullable|string|max:255',
-    'notes' => 'nullable|string',
-    'tracking_status' => 'nullable|array', // مصفوفة الحالة
-    'inspector_name' => 'nullable|string|max:255',
-]);
+            public function store(Request $request)
+        {
+            // أولاً التحقق من البيانات
+        $validated = $request->validate([
+            'client_name' => 'required|string|max:255',
+            'national_id' => 'required|string|max:20',
+            'transaction_number' => 'required|string|max:255',
+            'building_description' => 'nullable|string|max:255',
+            'center_name' => 'nullable|string|max:255',
+            'area' => 'nullable|string|max:255',
+            'notes' => 'nullable|string',
+            'gis_name' => 'nullable|string|max:255',
+            'tracking_status' => 'nullable|array', // مصفوفة الحالة
+            'inspector_name' => 'nullable|string|max:255',
+        ]);
+            if ($request->input('action') === 'preview') {
+                $data = $request->only([
+                    'client_name', 'national_id', 'transaction_number',
+                    'building_description', 'project_name', 'area',
+                    'notes', 'inspector_name', 'center_name',
+                    'gis_name'
+                ]);
+
+                // نستخدم نفس الفورمات الموجود في الفورم
+                $tracking = $request->input('tracking_status', []);
+
+                // نرتب التواريخ بشكل صحيح
+                uksort($tracking, function ($a, $b) {
+                    return strtotime('01-' . $a) <=> strtotime('01-' . $b);
+                });
+
+                $data['tracking_status'] = $tracking;
+
+                return view('manual.preview', compact('data'));
+}
 
 
-        if ($request->input('action') === 'preview') {
-            $data = $request->only([
-                'client_name', 'national_id', 'transaction_number',
-                'building_description', 'project_name', 'area',
-                 'notes', 'inspector_name', 'center_name',
-            ]);
-
-            // إضافة المصفوفة tracking_status التي تأتي من الفورم (مصفوفة)
-            $data['tracking_status'] = $request->input('tracking_status', []);
-
-            return view('manual.preview', compact('validated', 'data'));
-        }
 
 
     try {

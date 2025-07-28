@@ -192,23 +192,25 @@
 <!-- جدول موقف التتبع -->
 <h5>حالة التتبع</h5>
 
-<table border="1" cellspacing="0" cellpadding="5" style="border-collapse: collapse; width: 100%; margin-top: 20px;">
-  <tr>
-    <th>التاريخ</th>
-    <th>الموقف</th>
-  </tr>
+@php
+    $trackingStatus = $data['tracking_status'] ?? [];
+@endphp
 
-  {{-- تواريخ ثابتة مثال -- يمكن تعديلها ديناميكي --}}
-  @php
-    $dates = ['1-2025', '3-2025', '3-2024', '4-2023', '11-2020'];
-  @endphp
-
-  @for ($i = 0; $i < 5; $i++)
-    <tr>
-      <td>{{ $dates[$i] ?? '-' }}</td>
-      <td>{{ $data['tracking_status'][$i] ?? '-' }}</td>
-    </tr>
-  @endfor
+<table border="1" cellspacing="0" cellpadding="5" style="width: 100%; border-collapse: collapse;">
+    <thead>
+        <tr>
+            <th>التاريخ</th>
+            <th>الموقف</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach ($trackingStatus as $date => $status)
+            <tr>
+                <td>{{ $date }}</td>
+                <td>{{ $status ?: '-' }}</td>
+            </tr>
+        @endforeach
+    </tbody>
 </table>
 
 
