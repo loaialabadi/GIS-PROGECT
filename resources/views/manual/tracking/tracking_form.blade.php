@@ -1,6 +1,6 @@
 @extends('layout')
 @section('content')
-<div class="container mt-5">
+<div class="container mt-2">
     <h2>📝 إدخال بيانات شهادة تتبع</h2>
 
     @if(session('success'))
@@ -84,26 +84,41 @@
 
         <!-- حقول حالة التتبع 5 -->
 <h5>حالة التتبع حسب التاريخ</h5>
-
 @php
-    $defaultDates = ['11-2020', '4-2023', '3-2024', '3-2025'];
-    $trackingStatus = isset($certificate) && $certificate->tracking_status
-        ? json_decode($certificate->tracking_status, true)
-        : [];
+    $availableDates = ['11-2020', '1-2021', '6-2021', '9-2021', '12-2021',
+                       '3-2022', '7-2022', '11-2022', '4-2023', '6-2023',
+                       '9-2023', '12-2023', '3-2024', '6-2024', '3-2025'];
+
+    $selectedTracking = old('selected_tracking', []);
+    $trackingStatus = old('tracking_status', []);
 @endphp
 
-@foreach($defaultDates as $date)
-    <div class="mb-3">
-        <label for="tracking_status_{{ str_replace('-', '_', $date) }}" class="form-label">
-            الوصف بتاريخ {{ $date }}
-        </label>
+<h5>اختر 4 تواريخ فقط لإدخال وصف المتابعة:</h5>
+
+@foreach($availableDates as $index => $date)
+    <div class="mb-2 border p-2 rounded">
+        <div class="form-check">
+            <input 
+                class="form-check-input tracking-checkbox" 
+                type="checkbox" 
+                value="{{ $date }}" 
+                id="checkbox_{{ $index }}" 
+                name="selected_tracking[]"
+                {{ in_array($date, $selectedTracking) ? 'checked' : '' }}
+            >
+            <label class="form-check-label" for="checkbox_{{ $index }}">
+                {{ $date }}
+            </label>
+        </div>
+
         <input 
             type="text" 
-            id="tracking_status_{{ str_replace('-', '_', $date) }}" 
+            class="form-control mt-2 tracking-description" 
             name="tracking_status[{{ $date }}]" 
-            class="form-control" 
-            value="{{ old('tracking_status.' . $date, $trackingStatus[$date] ?? '') }}" 
-            placeholder="أدخل الوصف">
+            placeholder="أدخل وصف المتابعة"
+            value="{{ $trackingStatus[$date] ?? '' }}"
+            style="{{ in_array($date, $selectedTracking) ? '' : 'display:none;' }}"
+        >
     </div>
 @endforeach
 
@@ -124,5 +139,48 @@
         <button type="submit" name="action" value="save" class="btn btn-primary">💾 حفظ الشهادة</button>
 
     </form>
+
+
+
+
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const checkboxes = document.querySelectorAll('.tracking-checkbox');
+    const maxSelection = 4;
+
+    function updateCheckboxState() {
+        const selected = Array.from(checkboxes).filter(cb => cb.checked);
+        checkboxes.forEach(cb => {
+            if (!cb.checked) {
+                cb.disabled = selected.length >= maxSelection;
+            }
+        });
+    }
+
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function () {
+            // إظهار أو إخفاء حقل الوصف بناءً على الاختيار
+            const input = this.closest('.mb-2').querySelector('.tracking-description');
+            if (this.checked) {
+                input.style.display = '';
+            } else {
+                input.style.display = 'none';
+                input.value = ''; // مسح القيمة إذا ألغى التحديد
+            }
+
+            updateCheckboxState();
+        });
+    });
+
+    updateCheckboxState();
+});
+</script>
+@endpush
 </div>
+
+
+
+
 @endsection

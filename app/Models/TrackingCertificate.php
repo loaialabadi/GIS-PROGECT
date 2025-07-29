@@ -22,6 +22,9 @@ protected $fillable = [
     'tracking_status',  // هنا تضيفه ليتم الحفظ
 ];
 
+protected $casts = [
+    'tracking_status' => 'array',
+];
 
 
 public function transaction()

@@ -1,3 +1,4 @@
+/* الخط العام وجسم الصفحة */
 body {
     font-family: 'Tajawal', sans-serif;
     background-color: #f8f9fa;
@@ -22,43 +23,37 @@ body {
     left: 0;
     z-index: 1100;
 }
-
 .topbar .logo {
     font-weight: bold;
     font-size: 1.2rem;
     cursor: pointer;
 }
-
 .topbar .actions {
     display: flex;
     align-items: center;
     gap: 15px;
 }
-
 .topbar .actions i {
     cursor: pointer;
     font-size: 1.2rem;
 }
 
-/* sidebar */
+/* الشريط الجانبي */
 .sidebar {
     width: 250px;
     background-color: #343a40;
     height: 100vh;
     position: fixed;
-    top: 50px;
-    /* تحت الشريط العلوي */
+    top: 50px; /* أسفل الشريط العلوي */
     right: 0;
     padding-top: 20px;
     z-index: 1000;
     transition: width 0.3s ease;
     overflow: hidden;
 }
-
 .sidebar.collapsed {
     width: 70px;
 }
-
 .sidebar h4 {
     color: #fff;
     padding: 0 20px;
@@ -66,27 +61,23 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
 }
-
 .sidebar a {
     display: block;
     padding: 12px 20px;
-    color: #ffffff;
+    color: #fff;
     text-decoration: none;
     transition: background-color 0.3s ease;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
-
 .sidebar a:hover {
     background-color: #495057;
 }
-
 .sidebar a i {
     margin-left: 10px;
     font-size: 1.2rem;
 }
-
 .sidebar.collapsed a span {
     display: none;
 }
@@ -94,12 +85,10 @@ body {
 /* محتوى الصفحة */
 .content {
     margin-right: 250px;
-    padding: 70px 20px 20px 20px;
-    /* فوق 70px عشان الشريط العلوي + الهامش */
+    padding: 70px 20px 20px; /* 70px للمسافة من الشريط العلوي */
     transition: margin-right 0.3s ease;
 }
-
-.sidebar.collapsed~.content {
+.sidebar.collapsed ~ .content {
     margin-right: 70px;
 }
 
@@ -108,18 +97,174 @@ body {
     background-color: #0d6efd;
     color: white;
 }
-
 .card.text-bg-success {
     background-color: #198754;
     color: white;
 }
-
 .card.text-bg-warning {
     background-color: #ffc107;
     color: black;
 }
-
 .card.text-bg-danger {
     background-color: #dc3545;
     color: white;
+}
+
+/* تحسين شكل الفورم العام */
+.container {
+    max-width: 700px;
+    margin: 30px auto;
+    background: #fefefe;
+    border-radius: 10px;
+    padding: 25px 30px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+}
+.container h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    font-weight: 700;
+    color: #007bff;
+}
+label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: block;
+    color: #555;
+}
+input[type="text"],
+select,
+textarea {
+    width: 100%;
+    padding: 9px 12px;
+    margin-top: 4px;
+    margin-bottom: 12px;
+    border: 1.8px solid #ccc;
+    border-radius: 6px;
+    font-size: 15px;
+    transition: border-color 0.3s;
+    resize: vertical;
+}
+input[type="text"]:focus,
+select:focus,
+textarea:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0,123,255,0.5);
+}
+.form-check {
+    margin-bottom: 8px;
+}
+.tracking-description {
+    margin-top: 6px;
+    font-size: 14px;
+    border-color: #007bff;
+}
+.tracking-checkbox {
+    cursor: pointer;
+    transform: scale(1.2);
+    margin-right: 8px;
+}
+
+/* صندوق كل تاريخ متابع */
+.tracking-date-box {
+    border: 1.5px solid #007bff;
+    border-radius: 8px;
+    padding: 12px 15px;
+    margin-bottom: 12px;
+    background-color: #e9f1ff;
+}
+
+/* العنوان فوق حقول التواريخ */
+h5 {
+    margin-top: 30px;
+    color: #007bff;
+    font-weight: 700;
+}
+
+/* أزرار */
+button.btn {
+    width: 48%;
+    padding: 12px 0;
+    font-size: 17px;
+    border-radius: 7px;
+    border: none;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: background-color 0.3s ease;
+}
+button.btn-primary {
+    background-color: #007bff;
+    color: white;
+    float: right;
+}
+button.btn-primary:hover {
+    background-color: #0056b3;
+}
+button.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+    float: left;
+}
+button.btn-secondary:hover {
+    background-color: #565e64;
+}
+
+/* رسالة نجاح */
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border-radius: 7px;
+    padding: 12px 15px;
+    margin-bottom: 20px;
+    border: 1px solid #c3e6cb;
+    text-align: center;
+    font-weight: 600;
+}
+
+/* تنسيقات جدول شهادات التتبع الزمني */
+.tracking-certificates-container {
+    padding: 20px;
+    direction: rtl;
+}
+.tracking-certificates-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+.tracking-certificates-table th,
+.tracking-certificates-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+.tracking-certificates-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+.delivered {
+    color: green;
+    font-weight: bold;
+}
+.not-delivered {
+    color: red;
+    font-weight: bold;
+}
+.deliver-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.deliver-btn:hover {
+    background-color: #0056b3;
+}
+.tracking-status-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: right;
 }

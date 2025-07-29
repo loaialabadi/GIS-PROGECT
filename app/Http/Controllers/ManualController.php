@@ -29,7 +29,7 @@ class ManualController extends Controller
 
     public function trackingForm()
     {
-        return view('manual.tracking_form');
+        return view('manual.tracking.tracking_form');
     }
 
 

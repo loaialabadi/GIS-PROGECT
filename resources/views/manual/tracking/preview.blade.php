@@ -81,9 +81,9 @@
     font-weight: bold;
     text-align: center;
     background: #fde5a6;
-    padding: 10px;
+    padding: 12px;
     border: 1px solid black;
-    margin-bottom: 15px;
+    margin-bottom: 35px;
   }
 
   /* 4 صور متوزعة */
@@ -92,10 +92,11 @@
     grid-template-columns: repeat(2, 1fr);
     grid-gap: 15px;
     margin-bottom: 15px;
-    height: 600px; /* زود الارتفاع حسب الحاجة */
+    height: 800px; /* زود الارتفاع حسب الحاجة */
+    
 }
   .photo-box {
-        height: 290px; /* تقريبا نصف ارتفاع الحاوية مع بعض الفراغ */
+        height: 390px; /* تقريبا نصف ارتفاع الحاوية مع بعض الفراغ */
 
     border: 2px dashed #aaa;
     border-radius: 8px;
@@ -110,24 +111,31 @@
   }
 
 .photo-label {
-    position: absolute;
-    top: 0;  /* في أعلى الصورة */
-    left: 0;
-    width: 100%;  /* يعرض النص بعرض الصورة */
-    background-color: rgba(0, 0, 0, 0.5); /* خلفية شفافة سوداء */
-    color: #fff;
-    padding: 5px 10px;
-    font-size: 14px;
-    font-weight: bold;
-    box-sizing: border-box;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.6); /* خلفية شبه شفافة */
+  color: #fff;
+  padding: 5px 10px;
+  font-size: 14px;
+  font-weight: bold;
+  border-bottom: 1px solid #fff;
+  border-radius: 0 0 8px 8px;
+  white-space: nowrap;
+  z-index: 10; /* قيمة كبيرة عشان تكون فوق */
+  pointer-events: none; /* عشان لا تأثر على السحب أو النقر */
 }
-  .photo-box img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-        display: block;
 
-  }
+.photo-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.7); /* تأثير الإنير */
+  display: block;
+  position: relative; /* لتجنب تغطية النص */
+  z-index: 1;
+}
 
   /* باقي محتوى الشهادة */
   .content-area {
@@ -141,7 +149,7 @@
   /* النص النهائي تحت كل شيء */
   .footer-text {
     max-width: 1200px;
-    margin: 20px auto 0;
+    margin: 50px auto 0;
     font-size: 13px;
     text-align: center;
     border-top: 1px solid black;
@@ -150,10 +158,68 @@
     line-height: 1.3;
   }
 
+
+
+
+
+
+
+
+
+
+
+
+@media print {
+  body {
+    background: white;
+    margin: 0;
+    padding: 0;
+  }
+
+  #printBtn {
+    display: none !important;
+  }
+
+@page {
+  size: A3 landscape; /* حجم A3 - عرضي */
+  margin: 1cm;
+}
+
+  html, body {
+    width: auto;
+    height: auto;
+  }
+
+  .container {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 auto !important;
+    max-width: 100%;
+  }
+
+  .footer-text {
+    font-size: 12px;
+  }
+}
+
 </style>
 </head>
 <body>
 
+<button onclick="printCertificate()" id="printBtn" style="
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 9999;
+    padding: 10px 20px;
+    background-color: #0d6efd;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+">🖨️ طباعة الشهادة</button>
 
 
 <div class="container">
@@ -194,27 +260,35 @@
 
 @php
     $trackingStatus = $data['tracking_status'] ?? [];
+    $selectedTracking = $data['selected_tracking'] ?? [];
 @endphp
 
-<table border="1" cellspacing="0" cellpadding="5" style="width: 100%; border-collapse: collapse;">
-    <thead>
-        <tr>
-            <th>التاريخ</th>
-            <th>الموقف</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach ($trackingStatus as $date => $status)
+@if (!empty($selectedTracking))
+    <table border="1" cellspacing="0" cellpadding="5" style="width: 100%; border-collapse: collapse;">
+        <thead>
             <tr>
-                <td>{{ $date }}</td>
-                <td>{{ $status ?: '-' }}</td>
+                <th>التاريخ</th>
+                <th>الموقف</th>
             </tr>
-        @endforeach
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach ($selectedTracking as $date)
+                <tr>
+                    <td>{{ $date }}</td>
+                    <td>{{ $trackingStatus[$date] ?? '-' }}</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+@else
+    <p>لا توجد تواريخ متابعة مختارة.</p>
+@endif
 
 
-
+  <div class="mb-3">
+    <label for="notes" class="form-label">ملاحظات</label>
+    <textarea id="notes" name="notes" class="form-control" rows="3">{{ $data['notes'] ?? '' }}</textarea>
+  </div>
 <!-- جدول التوقيعات -->
 
 <table border="1" cellspacing="0" cellpadding="10" style="border-collapse: collapse; width: 100%; margin-top: 20px; text-align: center; font-size: 14px;">
@@ -262,10 +336,6 @@
   </tr>
 </table>
 
-
-
-
-
   </div>
 
   <!-- العمود الأوسط والأيسر -->
@@ -274,26 +344,32 @@
 
     <!-- 4 صور -->
 <div class="photos-container">
-  <div class="photo-box" ondrop="drop(event, this)" ondragover="allowDrop(event)" style="position: relative;">
-    <div class="photo-label">صورة بتاريخ 27-07-2025</div>
-    📷 اسحب الصورة هنا
-  </div>
+    @foreach ($selectedTracking as $date)
+        <div style="position: relative; margin-bottom: 15px;">
+            <div style="
+                position: absolute;
+                top: -25px;
+                left: 50%;
+                transform: translateX(-50%);
+                background-color: rgba(0, 0, 0, 0.7);
+                color: white;
+                padding: 3px 10px;
+                border-radius: 5px;
+                font-weight: bold;
+                white-space: nowrap;
+                z-index: 10;
+                pointer-events: none;
+            ">
+                صورة بتاريخ {{ $date }}
+            </div>
 
-  <div class="photo-box" ondrop="drop(event, this)" ondragover="allowDrop(event)" style="position: relative;">
-    <div class="photo-label">صورة بتاريخ 27-07-2025</div>
-    📷 اسحب الصورة هنا
-  </div>
-
-  <div class="photo-box" ondrop="drop(event, this)" ondragover="allowDrop(event)" style="position: relative;">
-    <div class="photo-label">صورة بتاريخ 27-07-2025</div>
-    📷 اسحب الصورة هنا
-  </div>
-
-  <div class="photo-box" ondrop="drop(event, this)" ondragover="allowDrop(event)" style="position: relative;">
-    <div class="photo-label">صورة بتاريخ 27-07-2025</div>
-    📷 اسحب الصورة هنا
-  </div>
+            <div class="photo-box" ondrop="drop(event, this)" ondragover="allowDrop(event)">
+                📷 اسحب الصورة هنا
+            </div>
+        </div>
+    @endforeach
 </div>
+
 
     <!-- باقي محتوى الشهادة -->
 
@@ -330,7 +406,29 @@
 
 
  
+function printCertificate() {
+    // أخفِ الزر قبل الطباعة
+    document.getElementById('printBtn').style.display = 'none';
 
+    // اطبع الصفحة
+    window.print();
+
+    // أعد إظهار الزر بعد قليل (بعد انتهاء الطباعة)
+    setTimeout(() => {
+        document.getElementById('printBtn').style.display = 'block';
+    }, 1000);
+}function printCertificate() {
+    // أخفِ الزر قبل الطباعة
+    document.getElementById('printBtn').style.display = 'none';
+
+    // اطبع الصفحة
+    window.print();
+
+    // أعد إظهار الزر بعد قليل (بعد انتهاء الطباعة)
+    setTimeout(() => {
+        document.getElementById('printBtn').style.display = 'block';
+    }, 1000);
+}
 
 
 </script>

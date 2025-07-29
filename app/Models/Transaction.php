@@ -10,4 +10,10 @@ class Transaction extends Model
     use HasFactory;
 
     protected $fillable = ['transaction_number'];
+    // app/Models/Transaction.php
+
+protected $casts = [
+    'delivered_at' => 'datetime',
+];
+
 }

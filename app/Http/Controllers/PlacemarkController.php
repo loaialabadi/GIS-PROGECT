@@ -24,36 +24,36 @@ class PlacemarkController extends Controller
     }
 
     // قراءة الملف واستعراض البيانات بدون حفظ
+    public function import(Request $request)
+    {
+        $request->validate([
+            'excel_file' => 'required|file|mimes:xlsx,xls',
+        ]);
 
-public function import(Request $request)
-{
-    $request->validate([
-        'excel_file' => 'required|file|mimes:xlsx,xls',
-    ]);
+        $rows = Excel::toArray([], $request->file('excel_file'));
+        $data = $rows[0] ?? [];
 
-    $rows = Excel::toArray([], $request->file('excel_file'));
-    $data = $rows[0] ?? [];
+        $headers = array_map('trim', $data[0] ?? []);
+        $records = array_slice($data, 1);
 
-    $headers = array_map('trim', $data[0] ?? []);
-    $records = array_slice($data, 1);
+        // ✅ تحويل الأرقام العربية في كل الخلايا
+        $convertedRecords = array_map(function ($row) {
+            return array_map([$this, 'convertArabicToEnglishNumbers'], $row);
+        }, $records);
 
-    // ✅ تحويل الأرقام العربية في كل الخلايا
-    $convertedRecords = array_map(function ($row) {
-        return array_map([$this, 'convertArabicToEnglishNumbers'], $row);
-    }, $records);
+        return view('placemarks.display', [
+            'headers' => $headers,
+            'records' => $convertedRecords,
+        ]);
+    }
 
-    return view('placemarks.display', [
-        'headers' => $headers,
-        'records' => $convertedRecords,
-    ]);
-}
-
-private function convertArabicToEnglishNumbers($string)
-{
-    $arabic = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
-    $english = ['0','1','2','3','4','5','6','7','8','9'];
-    return str_replace($arabic, $english, $string);
-}
+    // تحويل الأرقام العربية إلى إنجليزية في النصوص
+    private function convertArabicToEnglishNumbers($string)
+    {
+        $arabic = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+        $english = ['0','1','2','3','4','5','6','7','8','9'];
+        return str_replace($arabic, $english, $string);
+    }
 
     /*
     |--------------------------------------------------------------------------
@@ -67,42 +67,41 @@ private function convertArabicToEnglishNumbers($string)
         $data = $request->input('data');
         return view('placemarks.certificate_form', ['placemark' => $data]);
     }
-public function generateImageFromHTML(Request $request)
-{
-    $data = $request->input('data', []);
 
-    // حفظ الصور المرفوعة (لو في)
-    for ($i = 1; $i <= 4; $i++) {
-        $fileKey = "image_$i";
-        if ($request->hasFile($fileKey) && $request->file($fileKey)->isValid()) {
-            $path = $request->file($fileKey)->store('certificates', 'public');
-            $data["image{$i}"] = asset('storage/' . $path); // استخدم رابط مباشر
+    // توليد صورة الشهادة من HTML وحفظها
+    public function generateImageFromHTML(Request $request)
+    {
+        $data = $request->input('data', []);
+
+        // حفظ الصور المرفوعة (لو موجودة)
+        for ($i = 1; $i <= 4; $i++) {
+            $fileKey = "image_$i";
+            if ($request->hasFile($fileKey) && $request->file($fileKey)->isValid()) {
+                $path = $request->file($fileKey)->store('certificates', 'public');
+                $data["image{$i}"] = asset('storage/' . $path); // رابط مباشر للصور
+            }
         }
+
+        $html = view('placemarks.certificate_image', compact('data'))->render();
+
+        $filename = 'certificate_' . time() . '.png';
+        $path = public_path('certificates/' . $filename);
+
+        Browsershot::html($html)
+            ->format('A3')
+            ->margins(0, 0, 0, 0)
+            ->windowSize(2480, 3508)
+            ->save($path);
+
+        return redirect()->route('placemarks.showCertificateImage', ['filename' => $filename]);
     }
 
-    $html = view('placemarks.certificate_image', compact('data'))->render();
-
-    $filename = 'certificate_' . time() . '.png';
-    $path = public_path('certificates/' . $filename);
-
-    Browsershot::html($html)
-        ->format('A3')
-        ->margins(0, 0, 0, 0)
-        ->windowSize(2480, 3508)
-        ->save($path);
-
-    return redirect()->route('placemarks.showCertificateImage', ['filename' => $filename]);
-}
-
-
-
-    // عرض صورة الشهادة بعد التوليد
-public function showCertificateImage($filename)
-{
-    $imageUrl = asset('certificates/' . $filename);
-    return view('placemarks.show_certificate_image', compact('imageUrl'));
-}
-
+    // عرض صورة الشهادة النهائية
+    public function showCertificateImage($filename)
+    {
+        $imageUrl = asset('certificates/' . $filename);
+        return view('placemarks.show_certificate_image', compact('imageUrl'));
+    }
 
     /*
     |--------------------------------------------------------------------------
@@ -116,7 +115,7 @@ public function showCertificateImage($filename)
 
         $placemark = new Placemark();
 
-        // الحقول النصية
+        // تعيين الحقول النصية مع دعم أسماء عربية وإنجليزية
         $placemark->name         = $data['name'] ?? $data['الاسم'] ?? null;
         $placemark->national_id  = $data['national_id'] ?? $data['رقم بطاقة المواطن'] ?? null;
         $placemark->area_m2      = $data['area_m2'] ?? $data['المساحة'] ?? null;
@@ -127,7 +126,7 @@ public function showCertificateImage($filename)
         $placemark->notes        = $data['notes'] ?? $data['ملاحظات'] ?? null;
         $placemark->inspector    = $data['inspector'] ?? $data['المفتش'] ?? null;
 
-        // الصور (image1 إلى image8)
+        // تخزين روابط الصور image1 إلى image8 مع دعم الأسماء العربية
         for ($i = 1; $i <= 8; $i++) {
             $key = "image{$i}";
             $placemark->$key = $data[$key] ?? $data["صورة {$i}"] ?? null;
@@ -149,18 +148,14 @@ public function showCertificateImage($filename)
         return view('layout');
     }
 
-    
+    // توليد شهادة يدوية من البيانات (اختياري)
+    public function generateManualCertificate(Request $request)
+    {
+        $data = $request->input('data'); // بيانات الشهادة المدخلة
 
-
-
-public function generateManualCertificate(Request $request)
-{
-    $data = $request->input('data'); // بيانات الشهادة المدخلة
-
-    return view('placemarks.certificate_image', [
-        'data' => $data,
-        'filename' => null, // أو ضع اسم عشوائي لو تحفظ الصورة لاحقاً
-    ]);
-}
-
+        return view('placemarks.certificate_image', [
+            'data' => $data,
+            'filename' => null, // أو اسم عشوائي في حالة الحفظ لاحقاً
+        ]);
+    }
 }

@@ -27,6 +27,9 @@
     </a>
 
   
+<a href="{{ route('transactions.index') }}">
+      <i class="fas fa-file-alt"></i> <span> الشهايد</span>
+
     <a href="{{ route('manual.choose') }}">
       <i class="fas fa-pen"></i> <span>ادخال يدوي</span>
     </a>
@@ -73,6 +76,7 @@
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    @stack('scripts')
 
 </body>
 </html>
