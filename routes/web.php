@@ -12,6 +12,9 @@ use App\Http\Controllers\TransactionController;
 | Routes for Placemark Certificate System
 |--------------------------------------------------------------------------
 */
+// ✅ الصفحة الرئيسية لنظام الشهادات
+Route::get('/', [PlacemarkController::class, 'index'])
+    ->name('placemarks.index');
 
 // ✅ صفحة رفع ملف Excel
 Route::get('/placemarks/upload', [PlacemarkController::class, 'upload'])

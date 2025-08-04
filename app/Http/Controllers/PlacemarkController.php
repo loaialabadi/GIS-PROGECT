@@ -16,6 +16,10 @@ class PlacemarkController extends Controller
     | تحميل واستعراض ملف Excel
     |--------------------------------------------------------------------------
     */
+public function index()
+    {
+        return view('layout'); // أو أي صفحة رئيسية أخرى
+    }
 
     // صفحة رفع ملف Excel
     public function upload()
