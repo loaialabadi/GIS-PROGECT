@@ -12,6 +12,8 @@ return new class extends Migration {
             $table->string('client_name');          
             $table->string('national_id');          
             $table->string('transaction_number')->unique();
+            $table->string('purpose'); // الغرض من الشهادة
+            $table->string('coordinates')->nullable(); // الاحداثي
             $table->text('building_description')->nullable();
             $table->string('center_name')->nullable();
             $table->string('area')->nullable();

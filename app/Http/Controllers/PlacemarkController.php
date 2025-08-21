@@ -27,6 +27,7 @@ public function index()
         return view('placemarks.upload');
     }
 
+    
     // قراءة الملف واستعراض البيانات بدون حفظ
     public function import(Request $request)
     {

@@ -14,7 +14,7 @@ class ManualController extends Controller
 
     public function chooseType()
     {
-        return view('manual.choose_type');
+        return view('manual.index-manual.choose_type');
     }
 
     public function surveyForm()

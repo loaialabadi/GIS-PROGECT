@@ -14,11 +14,14 @@ protected $fillable = [
     'transaction_number',
     'building_description',
     'center_name',
+    'coordinates',
+    'purpose', // إضافة الغرض من الشهادة
     'area',
     'tracking_date',
     'notes',
     'inspector_name',
     'gis_name',
+    'certificate_path', // مسار الشهادة
     'tracking_status',  // هنا تضيفه ليتم الحفظ
 ];
 

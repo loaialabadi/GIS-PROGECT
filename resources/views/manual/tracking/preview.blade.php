@@ -251,7 +251,7 @@
   <tr><td>الرقم القومي</td><td>{{ $data['national_id'] ?? '' }}</td></tr>
     <tr><td>المركز</td><td>{{ $data['center_name'] ?? '' }}</td></tr>
     <tr><td>رقم المعاملة</td><td>{{ $data['transaction_number'] ?? '' }}</td></tr>
-  <tr><td>الغرض من الشهادة</td><td>{{ $data['certificate_purpose'] ?? '' }}</td></tr>
+  <tr><td>الغرض من الشهادة</td><td>{{ $data['purpose'] ?? '' }}</td></tr>
   <tr><td>الاحداثي</td><td>{{ $data['coordinates'] ?? '' }}</td></tr>
 </table>
 
@@ -377,10 +377,47 @@
 
 </div>
 
-<!-- نص ختامي أسفل الصفحة -->
 <div class="footer-text">
   تم الإرشاد عن الموقع بمعرفة مقدم الطلب وذلك دون أدنى مسؤولية على مركز معلومات شبكات المرافق بقنا - لا يعتد بهذا البيان كمستند ملكية - لا يستخدم هذا البيان إلا في الغرض المحرر من أجله.
 </div>
+<button onclick="saveCertificate()" class="btn btn-success">
+    🖼 حفظ الشهادة كصورة
+</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+function saveCertificate() {
+    let container = document.querySelector('.container');
+    let clientName = "{{ $data['client_name'] ?? 'unknown' }}";
+    let transactionNumber = "{{ $data['transaction_number'] ?? '0000' }}";
+
+    html2canvas(container, { scale: 2 }).then(canvas => {
+        canvas.toBlob(function(blob) {
+            let formData = new FormData();
+            formData.append("image", blob, "certificate.png");
+            formData.append("client_name", clientName);
+            formData.append("transaction_number", transactionNumber);
+
+            fetch("{{ route('tracking_certificates.save_temp_image') }}", {
+                method: "POST",
+                headers: { "X-CSRF-TOKEN": "{{ csrf_token() }}" },
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === 'success'){
+                    alert(data.message);
+                    console.log("رابط الصورة:", data.path);
+                } else {
+                    alert("❌ لم يتم الحفظ");
+                }
+            })
+            .catch(err => alert("❌ خطأ أثناء الحفظ"));
+        }, "image/png");
+    });
+}
+
+</script>
 
 <script>
   function allowDrop(ev) {

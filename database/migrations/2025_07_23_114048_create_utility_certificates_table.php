@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('street')->nullable();   // الشارع
             $table->string('city')->nullable();     // المدينة
             $table->string('inspection_type')->nullable(); // نوع الكشف
+            
             $table->timestamps();
         });
 }

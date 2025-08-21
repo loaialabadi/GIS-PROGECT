@@ -36,8 +36,23 @@
 
     <a href="{{ route('certificates.search.form') }}">
       <i class="fas fa-list"></i> <span> بحث</span>
+</a>
+    <a href="{{ route('tracking_certificates.review', ['status' => 'pending']) }}">
+      <i class="fas fa-eye"></i> <span> مراجعة الشهادات</span>
+    </a>
 
+    <a href="{{ route('tracking_certificates.delivery', ['status' => 'delivered']) }}">
+      <i class="fas fa-truck"></i> <span> عرض التسليمات</span>
+    </a>
 
+    <a href="{{ route('transactions.index') }}">
+      <i class="fas fa-cogs"></i> <span>الإعدادات</span>
+    </a>
+        <a href="{{ route('tracking_certificates.stifaa') }}">
+      <i class="fas fa-check"></i> <span>استيفاء الشهادات</span>
+    </a>
+
+  
 
   </div>
 
@@ -74,6 +89,25 @@
       content.style.marginRight = sidebar.classList.contains('collapsed') ? '70px' : '250px';
     });
   </script>
+<script>
+function updateStatus(id, change) {
+    fetch(`/tracking-certificates/${id}/update-status`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({ change: change })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('status-' + id).innerText = data.newStatus;
+        }
+    })
+    .catch(err => console.error(err));
+}
+
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     @stack('scripts')

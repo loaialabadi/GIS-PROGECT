@@ -34,29 +34,31 @@ class TransactionController extends Controller
         return view('transactions.index', compact('certificates'));
     }
 
-    // تحديث حالة التسليم لشهادة معينة بناءً على المرحلة (1, 2, أو 3)
-    public function deliver(Request $request, $id)
-    {
-        // البحث عن الشهادة المطلوبة أو إظهار خطأ 404
-        $certificate = TrackingCertificate::findOrFail($id);
 
-        // التحقق من صحة الحالة الجديدة (يجب أن تكون 1 أو 2 أو 3)
-        $request->validate([
-            'status' => 'required|in:1,2,3',
-        ]);
 
-        // تحديث حالة التسليم بالرقم المرسل
-        $certificate->delivery_status = $request->status;
+    // // تحديث حالة التسليم لشهادة معينة بناءً على المرحلة (1, 2, أو 3)
+    // public function deliver(Request $request, $id)
+    // {
+    //     // البحث عن الشهادة المطلوبة أو إظهار خطأ 404
+    //     $certificate = TrackingCertificate::findOrFail($id);
 
-        // إذا وصلت الحالة للمرحلة 3 (التسليم النهائي)، يتم حفظ تاريخ التسليم
-        if ($request->status == 3) {
-            $certificate->delivered_at = now();
-        }
+    //     // التحقق من صحة الحالة الجديدة (يجب أن تكون 1 أو 2 أو 3)
+    //     $request->validate([
+    //         'status' => 'required|in:1,2,3',
+    //     ]);
 
-        // حفظ التغييرات
-        $certificate->save();
+    //     // تحديث حالة التسليم بالرقم المرسل
+    //     $certificate->delivery_status = $request->status;
 
-        // إعادة التوجيه مع رسالة نجاح
-        return redirect()->back()->with('success', 'تم تحديث حالة التسليم بنجاح.');
-    }
+    //     // إذا وصلت الحالة للمرحلة 3 (التسليم النهائي)، يتم حفظ تاريخ التسليم
+    //     if ($request->status == 3) {
+    //         $certificate->delivered_at = now();
+    //     }
+
+    //     // حفظ التغييرات
+    //     $certificate->save();
+
+    //     // إعادة التوجيه مع رسالة نجاح
+    //     return redirect()->back()->with('success', 'تم تحديث حالة التسليم بنجاح.');
+    // }
 }

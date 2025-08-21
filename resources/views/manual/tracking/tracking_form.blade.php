@@ -25,11 +25,37 @@
                 <small class="text-danger">{{ $message }}</small>
             @enderror
         </div>
+        <div class="mb-3">
+            <label for="certificate_path" class="form-label">مسار الشهادة</label>
+            <input type="text" id="certificate_path" name="certificate_path" class="form-control" value="{{ old('certificate_path') }}">
+            @error('certificate_path')
+                <small class="text-danger">{{ $message }}</small>
+            @enderror
+        </div>
 
         <div class="mb-3">
             <label for="transaction_number" class="form-label">رقم المعاملة *</label>
             <input type="text" id="transaction_number" name="transaction_number" class="form-control" value="{{ old('transaction_number') }}" required>
             @error('transaction_number')
+                <small class="text-danger">{{ $message }}</small>
+            @enderror
+        </div>
+
+
+        <div class="mb-3">
+            <label for="purpose" class="form-label">الغرض من الشهادة *</label>
+            <input type="text" id="purpose" name="purpose" class="form-control" value="{{ old('purpose') }}" required>
+            @error('purpose')
+                <small class="text-danger">{{ $message }}</small>
+            @enderror
+        </div>
+
+
+  
+        <div class="mb-3">
+            <label for="coordinates" class="form-label">الإحداثيات</label>
+            <input type="text" id="coordinates" name="coordinates" class="form-control" value="{{ old('coordinates') }}">
+            @error('coordinates')
                 <small class="text-danger">{{ $message }}</small>
             @enderror
         </div>

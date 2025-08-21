@@ -90,12 +90,38 @@ Route::post('/tracking-certificates/preview', [TrackingCertificateController::cl
     ->name('manual.preview');
 
 // ✅ حفظ مسار PDF بعد إنشائه
-Route::post('/tracking_certificates/{id}/save_pdf_path', [TrackingCertificateController::class, 'savePdfPath'])
-    ->name('tracking_certificates.save_pdf_path');
+// Route::post('/tracking-certificates/save-image', [TrackingCertificateController::class, 'saveImage'])
+//     ->name('tracking_certificates.save_image');
+
+Route::post('/tracking-certificates/save-image', [TrackingCertificateController::class, 'saveImage'])
+    ->name('tracking_certificates.save_image');
 
 
+    Route::post('/tracking-certificates/save-temp-image', [TrackingCertificateController::class, 'saveTemporaryImage'])->name('tracking_certificates.save_temp_image');
+
+    Route::get('/tracking-certificates/{id}/edit', [TrackingCertificateController::class, 'edit'])->name('tracking_certificates.edit');
+Route::put('tracking-certificates/{id}/update', [TrackingCertificateController::class, 'update'])->name('tracking_certificates.update');
+
+
+
+// صفحة مراجعة الشهادات حسب الحالة
+Route::get('/tracking-certificates/review/{status}', [TrackingCertificateController::class, 'reviewByStatus'])
+    ->name('tracking_certificates.review');
+
+// صفحة عرض التسليمات التي تحتوي على رقم معين
+Route::get('/tracking-certificates/delivery/{status}', [TrackingCertificateController::class, 'deliveryByStatus'])
+    ->name('tracking_certificates.delivery');
+
+
+    Route::get('/tracking-certificates/stifaa', [TrackingCertificateController::class, 'stifaa'])
+    ->name('tracking_certificates.stifaa');
+
+
+Route::post('tracking-certificates/store-from-existing', [TrackingCertificateController::class, 'storeFromExisting'])
+    ->name('tracking_certificates.storeFromExisting');
 
 /*
+
 |--------------------------------------------------------------------------
 | Routes for Certificate Search & Edit
 |--------------------------------------------------------------------------
@@ -116,6 +142,20 @@ Route::get('/certificates/{type}/{id}/edit', [CertificateSearchController::class
 // ✅ تحديث الشهادة بعد التعديل
 Route::post('/certificates/{type}/{id}/update', [CertificateSearchController::class, 'update'])
     ->name('certificates.update');
+
+Route::get('tracking-certificates/{id}/images', [CertificateSearchController::class, 'getCertificateImages'])
+    ->name('tracking_certificates.images');
+
+
+
+    Route::post('/tracking-certificates/{id}/update-status', [TrackingCertificateController::class, 'updateStatus'])
+    ->name('tracking_certificates.update_status');
+
+
+Route::delete('/certificates/{id}/delete-image', [TrackingCertificateController::class, 'deleteImage'])
+    ->name('certificates.deleteImage');
+
+
 
 
 

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\File;
 
 use Illuminate\Http\Request;
 
@@ -73,4 +74,34 @@ class CertificateSearchController extends Controller
 
         return view('search.results', compact('results'));
     }
+
+
+
+
+
+
+
+
+
+
+public function getCertificateImages($certificateId)
+{
+    $certificate = \App\Models\TrackingCertificate::findOrFail($certificateId);
+
+    // اسم العميل بالعربي كما هو مخزن
+    $clientName = $certificate->client_name;
+
+    $folderPath = public_path("certificates/{$clientName}");
+
+    $images = [];
+
+    if (File::exists($folderPath)) {
+        $files = File::files($folderPath);
+        foreach ($files as $file) {
+            $images[] = asset("certificates/{$clientName}/" . $file->getFilename());
+        }
+    }
+
+    return view('search.certificate_images', compact('certificate', 'images'));
+}
 }
