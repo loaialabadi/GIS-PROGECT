@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <h2>الشهادات  التي بها استيفاء</h2>
+    <h2>الشهادات  زي الاستيفاالتي بها استيفاء</h2>
 
     @if(count($certificates) > 0)
         <table class="table table-bordered text-center align-middle">
