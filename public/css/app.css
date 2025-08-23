@@ -25,7 +25,7 @@ body {
 }
 .topbar .logo {
     font-weight: bold;
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     cursor: pointer;
 }
 .topbar .actions {
@@ -35,7 +35,7 @@ body {
 }
 .topbar .actions i {
     cursor: pointer;
-    font-size: 1.2rem;
+    font-size: 1.3rem;
 }
 
 /* الشريط الجانبي */
@@ -84,10 +84,18 @@ body {
 
 /* محتوى الصفحة */
 .content {
-    margin-right: 250px;
-    padding: 70px 20px 20px; /* 70px للمسافة من الشريط العلوي */
+    margin-right: 250px;       /* عرض الشريط الجانبي */
+    margin-left: 20px;         /* اترك مسافة صغيرة من جهة اليسار */
+    padding: 90px 40px 40px 40px; /* زيادة المسافة الداخلية */
     transition: margin-right 0.3s ease;
+    min-height: 100vh;
+    width: auto;               /* السماح للصندوق بالتمدد */
+    max-width: calc(100% - 270px); /* الحد الأقصى لتجنب تجاوز الشريط الجانبي */
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1); /* ظل أكبر قليلاً */
 }
+
 .sidebar.collapsed ~ .content {
     margin-right: 70px;
 }
@@ -111,16 +119,6 @@ body {
 }
 
 /* تحسين شكل الفورم العام */
-.container {
-    max-width: 900px;
-    margin: 30px auto;
-    background: #fefefe;
-    border-radius: 10px;
-    padding: 25px 30px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.1);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #333;
-}
 .container h2 {
     text-align: center;
     margin-bottom: 25px;
@@ -137,12 +135,12 @@ input[type="text"],
 select,
 textarea {
     width: 100%;
-    padding: 9px 12px;
+    padding: 10px 12px;
     margin-top: 4px;
     margin-bottom: 12px;
     border: 1.8px solid #ccc;
     border-radius: 6px;
-    font-size: 15px;
+    font-size: 16px;
     transition: border-color 0.3s;
     resize: vertical;
 }
@@ -163,15 +161,15 @@ textarea:focus {
 }
 .tracking-checkbox {
     cursor: pointer;
-    transform: scale(1.2);
+    transform: scale(1.3);
     margin-right: 8px;
 }
 
 /* صندوق كل تاريخ متابع */
 .tracking-date-box {
-    border: 1.5px solid #007bff;
+    border: 1.8px solid #007bff;
     border-radius: 8px;
-    padding: 12px 15px;
+    padding: 15px 18px;
     margin-bottom: 12px;
     background-color: #e9f1ff;
 }
@@ -186,8 +184,8 @@ h5 {
 /* أزرار */
 button.btn {
     width: 48%;
-    padding: 12px 0;
-    font-size: 17px;
+    padding: 14px 0;
+    font-size: 18px;
     border-radius: 7px;
     border: none;
     cursor: pointer;
@@ -231,18 +229,21 @@ button.btn-secondary:hover {
 .tracking-certificates-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 14px;
+    font-size: 15px;
 }
 .tracking-certificates-table th,
 .tracking-certificates-table td {
     border: 1px solid #ddd;
-    padding: 8px;
+    padding: 12px;
     text-align: center;
+    vertical-align: middle;
 }
 .tracking-certificates-table th {
     background-color: #f2f2f2;
     font-weight: bold;
 }
+
+/* ألوان الحالة */
 .delivered {
     color: green;
     font-weight: bold;
@@ -255,8 +256,8 @@ button.btn-secondary:hover {
     background-color: #007bff;
     color: white;
     border: none;
-    padding: 6px 10px;
-    border-radius: 4px;
+    padding: 8px 12px;
+    border-radius: 6px;
     cursor: pointer;
 }
 .deliver-btn:hover {

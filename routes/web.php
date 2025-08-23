@@ -123,6 +123,28 @@ Route::get('/tracking-certificates/delivery/{status}', [TrackingCertificateContr
 Route::post('tracking-certificates/store-from-existing', [TrackingCertificateController::class, 'storeFromExisting'])
     ->name('tracking_certificates.storeFromExisting');
 
+
+
+    Route::post('/tracking-certificates/{id}/update-status', [TrackingCertificateController::class, 'updateStatus'])
+    ->name('tracking_certificates.update_status');
+
+
+
+    Route::post('/search', [TrackingCertificateController::class, 'searchByTransactionNumber'])
+    ->name('certificates.search');
+
+
+    Route::get('/search', [TrackingCertificateController::class, 'showSearchForm'])
+    ->name('certificates.search.form');
+
+
+    Route::get('/tracking-certificates/{id}/images', [TrackingCertificateController::class, 'showCertificateImages'])
+    ->name('certificates.showImages');
+
+Route::delete('/tracking-certificates/{id}/images/delete', [TrackingCertificateController::class, 'deleteCertificateImage'])
+    ->name('certificates.deleteImage');
+    
+
 /*
 
 |--------------------------------------------------------------------------
@@ -131,12 +153,9 @@ Route::post('tracking-certificates/store-from-existing', [TrackingCertificateCon
 */
 
 // ✅ عرض نموذج البحث عن الشهادات برقم المعاملة
-Route::get('/search', [CertificateSearchController::class, 'showSearchForm'])
-    ->name('certificates.search.form');
 
 // ✅ تنفيذ البحث
-Route::post('/search', [CertificateSearchController::class, 'searchByTransactionNumber'])
-    ->name('certificates.search');
+
 
 // ✅ تعديل الشهادة حسب النوع والمعرّف
 Route::get('/certificates/{type}/{id}/edit', [CertificateSearchController::class, 'edit'])
@@ -146,17 +165,14 @@ Route::get('/certificates/{type}/{id}/edit', [CertificateSearchController::class
 Route::post('/certificates/{type}/{id}/update', [CertificateSearchController::class, 'update'])
     ->name('certificates.update');
 
-Route::get('tracking-certificates/{id}/images', [CertificateSearchController::class, 'getCertificateImages'])
-    ->name('tracking_certificates.images');
+// Route::get('tracking-certificates/{id}/images', [CertificateSearchController::class, 'getCertificateImages'])
+//     ->name('tracking_certificates.images');
 
 
 
-    Route::post('/tracking-certificates/{id}/update-status', [TrackingCertificateController::class, 'updateStatus'])
-    ->name('tracking_certificates.update_status');
 
-
-Route::delete('/certificates/{id}/delete-image', [TrackingCertificateController::class, 'deleteImage'])
-    ->name('certificates.deleteImage');
+// Route::delete('/certificates/{id}/delete-image', [TrackingCertificateController::class, 'deleteImage'])
+//     ->name('certificates.deleteImage');
 
 
 

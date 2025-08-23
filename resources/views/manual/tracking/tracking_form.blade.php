@@ -25,13 +25,8 @@
                 <small class="text-danger">{{ $message }}</small>
             @enderror
         </div>
-        <div class="mb-3">
-            <label for="certificate_path" class="form-label">مسار الشهادة</label>
-            <input type="text" id="certificate_path" name="certificate_path" class="form-control" value="{{ old('certificate_path') }}">
-            @error('certificate_path')
-                <small class="text-danger">{{ $message }}</small>
-            @enderror
-        </div>
+    <input type="hidden" id="certificate_path" name="certificate_path">
+
 
         <div class="mb-3">
             <label for="transaction_number" class="form-label">رقم المعاملة *</label>
@@ -161,7 +156,7 @@
   
 
         <!-- زر جديد للمعاينة -->
-        <button type="submit" name="action" value="preview" class="btn btn-secondary">👁️ معاينة الشهادة</button>
+        <button type="submit" name="action" value="preview" class="btn btn-secondary"  onclick="saveCertificateTemp()">👁️ معاينة الشهادة</button>
         <button type="submit" name="action" value="save" class="btn btn-primary">💾 حفظ الشهادة</button>
 
     </form>
@@ -171,7 +166,54 @@
 
 
 @push('scripts')
+
+
 <script>
+    const clientInput = document.getElementById('client_name');
+    const transactionInput = document.getElementById('transaction_number');
+    const pathInput = document.getElementById('certificate_path');
+
+    function updatePath() {
+        const clientName = clientInput.value.trim();
+        const transactionNumber = transactionInput.value.trim();
+
+        if(clientName && transactionNumber) {
+            pathInput.value = `certificates/${transactionNumber}_${clientName}/اسم_الملف_المحفوظ.jpg`;
+        }
+    }
+
+    clientInput.addEventListener('input', updatePath);
+    transactionInput.addEventListener('input', updatePath);
+</script>
+<script>
+    function saveCertificateTemp() {
+    let container = document.querySelector('.container');
+    html2canvas(container, { scale: 2, useCORS: true }).then(canvas => {
+        canvas.toBlob(function(blob) {
+            let formData = new FormData();
+            formData.append("image", blob, "certificate.png");
+
+            fetch("{{ route('tracking_certificates.save_temp_image') }}", {
+                method: "POST",
+                headers: { "X-CSRF-TOKEN": "{{ csrf_token() }}" },
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === 'success'){
+                    // حفظ المسار المؤقت في الحقل certificate_path_temp
+                    document.querySelector('#certificate_path_temp').value = data.path;
+
+                    // إرسال الفورم للمعاينة أو الحفظ النهائي
+                    document.querySelector('#previewForm').submit();
+                } else {
+                    alert("❌ لم يتم الحفظ مؤقتاً");
+                }
+            });
+        }, "image/png");
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     const checkboxes = document.querySelectorAll('.tracking-checkbox');
     const maxSelection = 4;

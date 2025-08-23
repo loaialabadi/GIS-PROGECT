@@ -8,7 +8,11 @@
         <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: flex-start;">
             @foreach($images as $img)
                 <div style="border: 1px solid #ccc; padding: 5px; flex: 1 1 45%; max-width: 600px; position: relative;">
-                    <img src="{{ $img }}" style="width: 100%; height: auto; display: block;">
+                    
+                    {{-- عرض الصورة ديناميكياً --}}
+<img src="{{ asset('storage/' . $img) }}" 
+     alt="صورة الشهادة" 
+     width="300" height="200">
 
                     {{-- زر الحذف --}}
                     <form action="{{ route('certificates.deleteImage', ['id' => $certificate->id]) }}" 
@@ -19,6 +23,9 @@
                         <input type="hidden" name="image" value="{{ $img }}">
                         <button type="submit" class="btn btn-danger btn-sm">🗑 حذف الصورة</button>
                     </form>
+
+                    {{-- رابط التحميل أو العرض المباشر --}}
+                    <a href="{{ asset('storage/' . $img) }}" target="_blank" class="btn btn-link btn-sm mt-1" style="display:block;">🔗 عرض الصورة</a>
                 </div>
             @endforeach
         </div>

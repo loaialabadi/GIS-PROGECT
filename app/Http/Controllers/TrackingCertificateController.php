@@ -18,47 +18,43 @@ class TrackingCertificateController extends Controller
     {
         return view('tracking_certificates.create');
     }
-
 public function store(Request $request)
 {
     // التحقق من صحة البيانات المرسلة
     $validated = $request->validate([
-        'client_name' => 'required|string|max:255',
-        'national_id' => 'required|string|max:20',
-        'transaction_number' => 'required|string|max:255',
-        'purpose' => 'required|string|max:500',
-        'coordinates' => 'nullable|string|max:255',
-
-        'certificate_path' => 'nullable|string', // مسار الصورة المؤقتة
-
-        'building_description' => 'nullable|string|max:255',
-        'center_name' => 'nullable|string|max:255',
-        'area' => 'nullable|string|max:255',
-        'notes' => 'nullable|string',
-        'gis_name' => 'nullable|string|max:255',
-        'tracking_status' => 'nullable|array', // مصفوفة حالة التتبع
-        'inspector_name' => 'nullable|string|max:255',
-        'selected_tracking' => 'nullable|array', // التواريخ المختارة
+        'client_name'         => 'required|string|max:255',
+        'national_id'         => 'required|string|max:20',
+        'transaction_number'  => 'required|string|max:255',
+        'purpose'             => 'required|string|max:500',
+        'coordinates'         => 'nullable|string|max:255',
+        'certificate_path'    => 'nullable|string', // مسار الصورة المؤقتة
+        'building_description'=> 'nullable|string|max:255',
+        'center_name'         => 'nullable|string|max:255',
+        'area'                => 'nullable|string|max:255',
+        'notes'               => 'nullable|string',
+        'gis_name'            => 'nullable|string|max:255',
+        'tracking_status'     => 'nullable|array',  // مصفوفة حالة التتبع
+        'inspector_name'      => 'nullable|string|max:255',
+        'selected_tracking'   => 'nullable|array',  // التواريخ المختارة
     ]);
 
-    // إذا كانت العملية معاينة (preview)
+    // معالجة المعاينة (preview)
     if ($request->input('action') === 'preview') {
         $data = $request->only([
             'client_name', 'national_id', 'transaction_number',
             'building_description', 'project_name', 'area',
-            'purpose', 'coordinates',
-            'notes', 'inspector_name', 'center_name',
-            'gis_name','certificate_path'
+            'purpose', 'coordinates', 'notes',
+            'inspector_name', 'center_name', 'gis_name',
+            'certificate_path'
         ]);
 
-        // جلب التواريخ المحددة وحالة التتبع
         $selectedTracking = $request->input('selected_tracking', []);
         $tracking = $request->input('tracking_status', []);
 
-        // فلترة التواريخ التي تم اختيارها فقط والتي لها حالة
+        // فلترة التواريخ التي تم اختيارها ولها حالة
         $selectedTracking = array_filter($selectedTracking, fn($d) => isset($tracking[$d]));
 
-        // ترتيب التواريخ حسب الشهر (افتراضي 01-الشهر)
+        // ترتيب التواريخ حسب الشهر
         uksort($tracking, function ($a, $b) {
             return strtotime('01-' . $a) <=> strtotime('01-' . $b);
         });
@@ -66,7 +62,6 @@ public function store(Request $request)
         $data['tracking_status'] = $tracking;
         $data['selected_tracking'] = $selectedTracking;
 
-        // عرض صفحة المعاينة مع البيانات
         return view('manual.tracking.preview', compact('data'));
     }
 
@@ -76,26 +71,41 @@ public function store(Request $request)
             'transaction_number' => $validated['transaction_number'],
         ]);
 
-        // ربط المعاملة بالبيانات
         $validated['transaction_id'] = $transaction->id;
 
-        // ترميز حالة التتبع
+        // ترميز حالة التتبع والتواريخ المحددة
         $validated['tracking_status'] = json_encode($request->input('tracking_status', []));
         $validated['selected_tracking'] = json_encode($request->input('selected_tracking', []));
 
+        // معالجة الصورة المؤقتة إذا وجدت
+    if ($request->filled('certificate_path_temp')) {
+        $tempPath = $request->input('certificate_path_temp'); 
 
-if (!empty($request->input('certificate_path_temp'))) {
-    $tempPath = $request->input('certificate_path_temp'); 
-    $finalFolder = 'certificates/' . $transaction->transaction_number . '_' . $validated['client_name'];
-    $finalPath = $finalFolder . '/' . basename($tempPath);
+        // تحقق أن الملف موجود داخل storage/app/public
+        if (Storage::exists('public/' . $tempPath)) {
 
-    if (!Storage::exists('public/' . $finalFolder)) {
-        Storage::makeDirectory('public/' . $finalFolder, 0777, true);
+            // استبدال الأحرف غير الصالحة في اسم المجلد
+            $folderName = preg_replace('/[^A-Za-z0-9_\-]/u', '_', $transaction->transaction_number . '_' . $validated['client_name']);
+
+            $finalFolder = 'certificates/' . $folderName;
+            $finalPath = $finalFolder . '/' . basename($tempPath);
+
+            // إنشاء المجلد النهائي إذا لم يكن موجودًا
+            if (!Storage::exists('public/' . $finalFolder)) {
+                Storage::makeDirectory('public/' . $finalFolder, 0777, true);
+            }
+
+            // نقل الملف إلى المجلد النهائي
+            Storage::move('public/' . $tempPath, 'public/' . $finalPath);
+
+            // حفظ المسار النهائي في العمود certificate_path
+            $validated['certificate_path'] = $finalPath;
+        } else {
+            // إذا الملف غير موجود
+            $validated['certificate_path'] = null;
+        }
     }
 
-    Storage::move('public/' . $tempPath, 'public/' . $finalPath);
-    $validated['certificate_path'] = $finalPath; // هذا هو المسار النهائي المرتبط بالمعاملة
-}
 
         // إنشاء سجل جديد لشهادة التتبع
         TrackingCertificate::create($validated);
@@ -104,6 +114,7 @@ if (!empty($request->input('certificate_path_temp'))) {
             ->with('success', '✅ تم حفظ شهادة المتابعة والصورة بنجاح!');
 
     } catch (QueryException $e) {
+        // التعامل مع خطأ رقم المعاملة المكرر
         if ($e->errorInfo[1] == 1062) {
             return back()->withErrors([
                 'transaction_number' => '⚠️ رقم المعاملة مستخدم بالفعل، برجاء اختيار رقم مختلف.'
@@ -148,24 +159,19 @@ public function update(Request $request, $id)
 
     $certificate->update($request->all());
 
-    return redirect()->route('transactions.index')->with('success', 'تم تعديل بيانات الشهادة بنجاح');
+    return redirect()->back()->with('success', 'تم تعديل بيانات الشهادة بنجاح');
 }
-
 public function updateStatus(Request $request, $id)
 {
-    $certificate = \App\Models\TrackingCertificate::findOrFail($id);
+    $certificate = TrackingCertificate::findOrFail($id);
 
-    $change = $request->input('change', 0); // 1 أو -1
-    $newStatus = $certificate->delivery_status + $change;
+    $status = (int) $request->input('status');
 
-    // تحديد الحد الأدنى والحد الأقصى للقيمة 1 إلى 7
-    if ($newStatus < 1) $newStatus = 1;
-    if ($newStatus > 7) $newStatus = 7;
+    // تحديث حالة المعاملة مباشرة
+    $certificate->delivery_status = $status;
 
-    $certificate->delivery_status = $newStatus;
-
-    // لو تحب ممكن تضيف شرط لتسجيل وقت عند القيمة 7
-    if ($newStatus === 7) {
+    // مثال: تسجيل وقت التسليم عند استيفاء أو تسليم
+    if (in_array($status, [2, 4])) {
         $certificate->delivered_at = now();
     }
 
@@ -173,14 +179,14 @@ public function updateStatus(Request $request, $id)
 
     return response()->json([
         'success' => true,
-        'newStatus' => $newStatus,
+        'newStatus' => $status
     ]);
 }
 
 
 public function reviewByStatus($status)
 {
-    $statuses = [1, 2, 4]; // القيم اللي عايز تجيبها
+    $statuses = [1, 3]; // القيم اللي عايز تجيبها
     $certificates = \App\Models\TrackingCertificate::whereIn('delivery_status', $statuses)->get();
 
     return view('manual.tracking.review', compact('certificates', 'statuses'));
@@ -188,7 +194,7 @@ public function reviewByStatus($status)
 
 public function deliveryByStatus($status)
 {
-     $statuses = [2, 3, 4]; // القيم اللي عايز تجيبها
+     $statuses = [4, 5]; // القيم اللي عايز تجيبها
     $certificates = \App\Models\TrackingCertificate::whereIn('delivery_status', $statuses)->get();
 
     return view('manual.tracking.delivery', compact('certificates', 'status'));
@@ -198,7 +204,7 @@ public function stifaa()
 {
     // نفترض أن الاستيفاء حالته رقم 3 مثلاً
     $status = "استيفاء";
-    $certificates = TrackingCertificate::where('delivery_status', 3)->get();
+    $certificates = TrackingCertificate::where('delivery_status', 2)->get();
 
     return view('manual.tracking.stifaa', compact('certificates', 'status'));
 }
@@ -228,12 +234,6 @@ public function createFromExisting($id)
     $trackingStatus = is_string($certificate->tracking_status)
         ? json_decode($certificate->tracking_status, true)
         : $certificate->tracking_status;
-
-        $trackingStatus = collect($trackingStatus)
-    ->filter(function($status, $date) {
-        return !empty($date) && !empty($status);
-    });
-
 
     // تمرير البيانات إلى view إنشاء شهادة جديدة
     return view('manual.tracking.create_from_existing', [
@@ -291,7 +291,68 @@ public function storeFromExisting(Request $request)
 
 
 
+public function showSearchForm()
+    {
+        return view('search.search');
+    }
+
+
+
+public function searchByTransactionNumber(Request $request)
+{
+    $request->validate([
+        'transaction_number' => 'required|string',
+    ]);
+
+    $term = $request->input('transaction_number');
+
+    $results = TrackingCertificate::where('transaction_number', $term)
+                ->orWhere('client_name', 'like', "%{$term}%")
+                ->get();
+
+    return view('search.search', [
+        'results' => $results,
+    ]);
+}
+
+
+
+
 
 
     
+
+
+    public function showCertificateImages($id)
+    {
+        $certificate = TrackingCertificate::findOrFail($id);
+
+        // اسم المجلد حسب رقم المعاملة واسم العميل، مع استبدال الأحرف الغير صالحة
+        $folderName = preg_replace('/[^A-Za-z0-9\-_]/u', '_', $certificate->transaction_number . '_' . $certificate->client_name);
+        $folderPath = storage_path('app/public/certificates/' . $folderName);
+
+        $images = [];
+        if (File::exists($folderPath)) {
+            foreach (File::files($folderPath) as $file) {
+                // مسار نسبي بالنسبة للـ storage link
+                $images[] = 'certificates/' . $folderName . '/' . $file->getFilename();
+            }
+        }
+
+        return view('search.certificate_images', compact('certificate', 'images'));
+    }
+
+    // حذف صورة محددة
+    public function deleteCertificateImage(Request $request, $id)
+    {
+        $certificate = TrackingCertificate::findOrFail($id);
+        $image = $request->input('image');
+
+        if ($image && Storage::exists('public/' . $image)) {
+            Storage::delete('public/' . $image);
+        }
+
+        return redirect()->back()->with('success', 'تم حذف الصورة بنجاح.');
+    }
 }
+

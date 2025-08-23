@@ -51,57 +51,43 @@ class CertificateSearchController extends Controller
         };
     }
 
-    // البحث في جميع أنواع الشهادات حسب رقم المعاملة
-    public function searchByTransactionNumber(Request $request)
+
+
+
+
+
+
+
+
+    public function showCertificateImages($certificateId)
     {
-        $request->validate([
-            'transaction_number' => 'required|string',
-        ]);
+        $certificate = TrackingCertificate::findOrFail($certificateId);
 
-        $results = [];
+        // المسار داخل storage/app/public
+        $folderPath = storage_path('app/public/certificates/' . $certificate->transaction_number . '_' . $certificate->client_name);
 
-        // البحث في كل نوع وإضافة أول نتيجة لكل نوع
-        $results[] = \App\Models\TrackingCertificate::where('transaction_number', $request->transaction_number)->first();
-        $results[] = \App\Models\UtilityCertificate::where('transaction_number', $request->transaction_number)->first();
-        $results[] = \App\Models\SurveyCertificate::where('transaction_number', $request->transaction_number)->first();
+        $images = [];
 
-        // إزالة القيم الفارغة
-        $results = array_filter($results);
-
-        if (empty($results)) {
-            return redirect()->back()->with('error', 'لم يتم العثور على أي شهادة بهذا الرقم.');
+        if (File::exists($folderPath)) {
+            $files = File::files($folderPath);
+            foreach ($files as $file) {
+                $images[] = 'storage/certificates/' . $certificate->transaction_number . '_' . $certificate->client_name . '/' . $file->getFilename();
+            }
         }
 
-        return view('search.results', compact('results'));
+        return view('tracking_certificates.images', compact('certificate', 'images'));
     }
 
+    // حذف صورة معينة
+    public function deleteCertificateImage(Request $request, $certificateId)
+    {
+        $certificate = TrackingCertificate::findOrFail($certificateId);
+        $imagePath = $request->input('image'); // المسار مثل: storage/certificates/147_name/file.png
 
-
-
-
-
-
-
-
-
-public function getCertificateImages($certificateId)
-{
-    $certificate = \App\Models\TrackingCertificate::findOrFail($certificateId);
-
-    // اسم العميل بالعربي كما هو مخزن
-    $clientName = $certificate->client_name;
-
-    $folderPath = public_path("certificates/{$clientName}");
-
-    $images = [];
-
-    if (File::exists($folderPath)) {
-        $files = File::files($folderPath);
-        foreach ($files as $file) {
-            $images[] = asset("certificates/{$clientName}/" . $file->getFilename());
+        if (Storage::exists(str_replace('storage/', 'public/', $imagePath))) {
+            Storage::delete(str_replace('storage/', 'public/', $imagePath));
         }
-    }
 
-    return view('search.certificate_images', compact('certificate', 'images'));
-}
+        return back()->with('success', 'تم حذف الصورة بنجاح!');
+    }
 }

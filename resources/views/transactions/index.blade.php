@@ -16,14 +16,14 @@
     </form>
 </div>
 
-<div class="container tracking-certificates-container">
+<div class="container tracking-certificates-container mt-4">
     <h2>قائمة شهادات التتبع الزمني</h2>
 
     @if(session('success'))
         <div class="alert-success">{{ session('success') }}</div>
     @endif
 
-    <table class="tracking-certificates-table">
+    <table class="table table-bordered table-striped tracking-certificates-table">
         <thead>
             <tr>
                 <th>#</th>
@@ -41,79 +41,88 @@
                 <th>الإجراء</th>
             </tr>
         </thead>
-<tbody>
-    @foreach($certificates as $certificate)
-    <tr>
-        <td>{{ $certificate->id }}</td>
-        <td>{{ $certificate->transaction_number }}</td>
-        <td>{{ $certificate->client_name }}</td>
-        <td>{{ $certificate->national_id }}</td>
-        <td>{{ $certificate->building_description }}</td>
-        <td>{{ $certificate->center_name }}</td>
-        <td>{{ $certificate->area }}</td>
-        <td>
-            @if(is_array($certificate->tracking_status))
-                @php
-                    $filteredTracking = array_filter($certificate->tracking_status, fn($status) => !empty($status));
-                @endphp
-                @if(count($filteredTracking) > 0)
-                    <ul class="tracking-status-list">
-                        @foreach($filteredTracking as $date => $status)
-                            <li><strong>{{ $date }}:</strong> {{ $status }}</li>
-                        @endforeach
-                    </ul>
-                @else
-                    <span>لا يوجد بيانات تتبع</span>
-                @endif
-            @else
-                <span>لا يوجد بيانات تتبع</span>
-            @endif
-        </td>
-        <td>{{ $certificate->notes }}</td>
-        <td>{{ $certificate->inspector_name }}</td>
-        <td>{{ $certificate->gis_name }}</td>
-        <td>{{ $certificate->created_at }}</td>
-        <td>
-            <a href="{{ route('tracking_certificates.edit', $certificate->id) }}" class="btn btn-warning">
-                📝 مراجعة
-            </a>
+        <tbody>
+            @foreach($certificates as $certificate)
+            <tr>
+                <td>{{ $certificate->id }}</td>
+                <td>{{ $certificate->transaction_number }}</td>
+                <td>{{ $certificate->client_name }}</td>
+                <td>{{ $certificate->national_id }}</td>
+                <td>{{ $certificate->building_description }}</td>
+                <td>{{ $certificate->center_name }}</td>
+                <td>{{ $certificate->area }}</td>
+                <td>
+                    <span id="status-{{ $certificate->id }}">
+                        {{ $certificate->delivery_status }}
+                    </span>
+                </td>
+                <td>{{ $certificate->notes }}</td>
+                <td>{{ $certificate->inspector_name }}</td>
+                <td>{{ $certificate->gis_name }}</td>
+                <td>{{ $certificate->created_at }}</td>
+                <td>
+                    <div class="btn-group flex-wrap">
+                        <a href="{{ route('tracking_certificates.edit', $certificate->id) }}" class="btn btn-warning btn-sm mb-1">
+                            📝 مراجعة
+                        </a>
 
-            <a href="{{ route('tracking_certificates.images', $certificate->id) }}" class="btn btn-info" target="_blank">
-                🖼 عرض الصور
-            </a>
+                        <a href="{{ route('tracking_certificates.images', $certificate->id) }}" class="btn btn-info btn-sm mb-1" target="_blank">
+                            🖼 عرض الصور
+                        </a>
 
-                <span id="status-{{ $certificate->id }}">{{ $certificate->delivery_status }}</span>
-
-    <button onclick="updateStatus({{ $certificate->id }}, 1)">➕</button>
-    <button onclick="updateStatus({{ $certificate->id }}, -1)">➖</button>
-        </td>
-    </tr>
-    @endforeach
-</tbody>
-
+                        <!-- أزرار الحالات المختلفة -->
+                        <button class="btn btn-primary btn-sm mb-1" onclick="updateStatus({{ $certificate->id }}, 1)">
+                            في صفحة المراجعة
+                        </button>
+                        <button class="btn btn-success btn-sm mb-1" onclick="updateStatus({{ $certificate->id }}, 2)">
+                            استيفاء
+                        </button>
+                        <button class="btn btn-warning btn-sm mb-1" onclick="updateStatus({{ $certificate->id }}, 3)">
+                            تمت المراجعة
+                        </button>
+                        <button class="btn btn-secondary btn-sm mb-1" onclick="updateStatus({{ $certificate->id }}, 4)">
+                            استلام من النظم
+                        </button>
+                        <button class="btn btn-dark btn-sm mb-1" onclick="updateStatus({{ $certificate->id }}, 5)">
+                            تسليم للعميل
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            @endforeach
+        </tbody>
     </table>
 </div>
 @endsection
+
 @push('scripts')
 <script>
-function updateStatus(id, change) {
+const statusText = {
+    1: 'في صفحة المراجعة',
+    2: 'استيفاء',
+    3: 'تمت المراجعة',
+    4: 'استلام من النظم',
+    5: 'تم التسليم للعميل'
+};
+
+function updateStatus(id, status) {
     fetch(`/tracking-certificates/${id}/update-status`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': '{{ csrf_token() }}'
         },
-        body: JSON.stringify({ change: change })
+        body: JSON.stringify({ status: status })
     })
     .then(res => res.json())
     .then(data => {
-        if (data.success) {
-            document.getElementById('status-' + id).innerText = data.newStatus;
+        if(data.success) {
+            document.getElementById('status-' + id).innerText = statusText[data.newStatus] || data.newStatus;
+        } else {
+            alert(data.message || 'حدث خطأ أثناء تحديث الحالة');
         }
     })
     .catch(err => console.error(err));
 }
 </script>
 @endpush
-
-

@@ -27,12 +27,32 @@ protected $fillable = [
 
 protected $casts = [
     'tracking_status' => 'array',
-];
+            'delivery_status' => 'array',
 
+];
+    public function getTrackingStatusAttribute($value)
+    {
+        if (is_array($value)) {
+            return $value;
+        }
+
+        if (is_string($value)) {
+            $decoded = json_decode($value, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                return $decoded;
+            }
+
+            return explode(',', $value);
+        }
+
+        return [];
+    }
 
 public function transaction()
 {
     return $this->belongsTo(Transaction::class);
 }
+
+
 
 }

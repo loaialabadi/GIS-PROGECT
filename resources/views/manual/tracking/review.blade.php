@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <h2>الشهادات  التي لم يتم مراجعتها</h2>
+    <h2>الشهادات التي لم يتم مراجعتها</h2>
 
     @if(count($certificates) > 0)
         <table class="table table-bordered text-center align-middle">
@@ -31,22 +31,23 @@
                         <td>{{ $certificate->notes }}</td>
                         <td>{{ $certificate->created_at }}</td>
                         <td>
-                            <div class="btn-group">
-                                <a href="{{ route('tracking_certificates.edit', $certificate->id) }}" 
-                                   class="btn btn-warning btn-sm">
+                            <div class="btn-group mb-1">
+                                <a href="{{ route('tracking_certificates.edit', $certificate->id) }}" class="btn btn-warning btn-sm">
                                     تعديل بيانات
                                 </a>
-                                <button class="btn btn-success btn-sm" onclick="updateStatus({{ $certificate->id }}, 1)">
-                                    ➕
-                                </button>
-                                <button class="btn btn-danger btn-sm" onclick="updateStatus({{ $certificate->id }}, -1)">
-                                    ➖
-                                </button>
 
-            <a href="{{ route('tracking_certificates.images', $certificate->id) }}" class="btn btn-info" target="_blank">
-                🖼 عرض الصور
-            </a>
-
+                                <button class="btn btn-primary btn-sm" onclick="updateStatus({{ $certificate->id }}, 2)">
+                                    استيفاء
+                                </button>
+                                <button class="btn btn-success btn-sm" onclick="updateStatus({{ $certificate->id }}, 3)">
+                                    تمت المراجعة
+                                </button>
+                                <button class="btn btn-info btn-sm" onclick="updateStatus({{ $certificate->id }}, 4)">
+                                    تسليم إلى خدمة العملاء
+                                </button>
+                                <a href="{{ route('certificates.showImages', $certificate->id) }}" class="btn btn-dark btn-sm" target="_blank">
+                                    🖼 عرض الصور
+                                </a>
                             </div>
                         </td>
                     </tr>
@@ -63,21 +64,27 @@
 
 @push('scripts')
 <script>
-function updateStatus(id, change) {
+const statusText = {
+    2: 'استيفاء',
+    3: 'تمت المراجعة',
+    4: 'تم التسليم إلى خدمة العملاء'
+};
+
+function updateStatus(id, status) {
     fetch(`/tracking-certificates/${id}/update-status`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': '{{ csrf_token() }}'
         },
-        body: JSON.stringify({ change: change })
+        body: JSON.stringify({ status: status })
     })
     .then(res => res.json())
     .then(data => {
         if (data.success) {
-            document.getElementById('status-' + id).innerText = data.newStatus;
+            document.getElementById('status-' + id).innerText = statusText[data.newStatus] || data.newStatus;
         } else {
-            alert('حدث خطأ أثناء تحديث الحالة');
+            alert(data.message || 'حدث خطأ أثناء تحديث الحالة');
         }
     })
     .catch(err => console.error(err));
