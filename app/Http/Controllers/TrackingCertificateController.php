@@ -180,7 +180,7 @@ public function updateStatus(Request $request, $id)
 
 public function reviewByStatus($status)
 {
-    $statuses = [2, 3, 4]; // القيم اللي عايز تجيبها
+    $statuses = [1, 2, 4]; // القيم اللي عايز تجيبها
     $certificates = \App\Models\TrackingCertificate::whereIn('delivery_status', $statuses)->get();
 
     return view('manual.tracking.review', compact('certificates', 'statuses'));
@@ -228,6 +228,12 @@ public function createFromExisting($id)
     $trackingStatus = is_string($certificate->tracking_status)
         ? json_decode($certificate->tracking_status, true)
         : $certificate->tracking_status;
+
+        $trackingStatus = collect($trackingStatus)
+    ->filter(function($status, $date) {
+        return !empty($date) && !empty($status);
+    });
+
 
     // تمرير البيانات إلى view إنشاء شهادة جديدة
     return view('manual.tracking.create_from_existing', [

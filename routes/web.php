@@ -102,7 +102,10 @@ Route::post('/tracking-certificates/save-image', [TrackingCertificateController:
     Route::get('/tracking-certificates/{id}/edit', [TrackingCertificateController::class, 'edit'])->name('tracking_certificates.edit');
 Route::put('tracking-certificates/{id}/update', [TrackingCertificateController::class, 'update'])->name('tracking_certificates.update');
 
+//tracking_certificates.create_from_existing
 
+Route::get('/tracking-certificates/create_from_existing/{id}', [TrackingCertificateController::class, 'createFromExisting'])
+    ->name('tracking_certificates.create_from_existing');
 
 // صفحة مراجعة الشهادات حسب الحالة
 Route::get('/tracking-certificates/review/{status}', [TrackingCertificateController::class, 'reviewByStatus'])

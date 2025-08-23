@@ -78,52 +78,6 @@
         @endforeach
     </table>
 @endif
-
-<table border="1" cellspacing="0" cellpadding="10" style="border-collapse: collapse; width: 100%; margin-top: 20px; text-align: center; font-size: 14px;">
-  <tr>
-    <th>خدمة عملاء</th>
-    <th>أعمال رفع ميداني</th>
-    <th>أعمال GIS</th>
-  </tr>
-  <tr>
-    <td>
-      <div><strong>الاسم:</strong> منى عبدالفتاح</div><br>
-      <div style="border-top: 1px solid #000; margin-top: 10px;"><strong>التوقيع:.........</strong> {{ $data['customer_service_sign'] ?? '' }}</div>
-    </td>
-    <td>
-      <div><strong>الاسم:</strong> {{ $data['inspector_name'] ?? '' }}</div><br>
-      <div style="border-top: 1px solid #000; margin-top: 10px;"><strong>التوقيع:..........</strong> {{ $data['field_survey_sign'] ?? '' }}</div>
-    </td>
-    <td>
-      <div><strong>الاسم:</strong> {{ $data['gis_name'] ?? '' }}</div><br>
-      <div style="border-top: 1px solid #000; margin-top: 10px;"><strong>التوقيع:.........</strong> {{ $data['gis_sign'] ?? '' }}</div>
-    </td>
-  </tr>
-</table>
-
-<!-- جدول اعتماد رئيس المركز وختم الشعار -->
-<table border="1" cellspacing="0" cellpadding="10" style="border-collapse: collapse; width: 100%; margin-top: 20px; text-align: center; font-size: 14px;">
-  <tr>
-    <th style="width: 50%;">يعتمد رئيس المركز</th>
-    <th style="width: 50%;">ختم الشعار</th>
-  </tr>
-  <tr>
-    <!-- بيانات رئيس المركز -->
-    <td style="vertical-align: middle;">
-      <div><strong>الاسم:</strong> {{ $data['manager_name'] ?? 'م. محمد مصطفى ياسين' }}</div>
-      <div style="margin-top: 15px; border-top: 1px solid #000; display: inline-block; padding-top: 5px;">
-        <strong>التوقيع:</strong> {{ $data['manager_sign'] ?? '.........' }}
-      </div>
-    </td>
-
-    <!-- ختم الشعار -->
-    <td style="height: 15px; vertical-align: middle;">
-      <div style="width: 50px; height: 50px; border: 2px solid #000; border-radius: 50%; margin: 0 auto;"></div>
-      <div style="margin-top: 10px;"> خاتم المركز</div>
-    </td>
-  </tr>
-</table>
-
         </div>
 
         <!-- العمود الأيسر -->

@@ -13,7 +13,7 @@ return new class extends Migration
     {
 // داخل الميجريشن:
 Schema::table('tracking_certificates', function (Blueprint $table) {
-    $table->tinyInteger('delivery_status')->default(0)->comment('0=لم يتم، 1=مفتش، 2=GIS، 3=نهائي');
+    $table->tinyInteger('delivery_status')->default(1)->comment('0=لم يتم، 1=مفتش، 2=GIS، 3=نهائي');
     $table->timestamp('delivered_at')->nullable();
 });
 
