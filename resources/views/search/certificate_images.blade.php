@@ -1,41 +1,49 @@
 @extends('layout')
 
 @section('content')
-<div class="container">
-    <h2>صور شهادة {{ $certificate->client_name }}</h2>
+<div class="container mt-4">
+    <h2 class="mb-4 text-center">صور شهادة العميل: <strong>{{ $certificate->client_name }}</strong></h2>
 
     @if(count($images) > 0)
-        <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: flex-start;">
+        <div class="row g-4">
             @foreach($images as $img)
-                <div style="border: 1px solid #ccc; padding: 5px; flex: 1 1 45%; max-width: 600px; position: relative;">
-                    
-                    {{-- عرض الصورة ديناميكياً --}}
-<img src="{{ asset('storage/' . $img) }}" 
-     alt="صورة الشهادة" 
-     width="300" height="200">
+                <div class="col-lg-6 col-md-6 col-sm-12">
+                    <div class="card shadow-sm h-100 rounded">
+                        {{-- عرض الصورة --}}
+                        <img src="{{ asset('storage/' . $img) }}" 
+                             alt="صورة الشهادة" 
+                             class="card-img-top" 
+                             style="object-fit: cover; height: 300px; border-bottom: 1px solid #dee2e6;">
 
-                    {{-- زر الحذف --}}
-                    <form action="{{ route('certificates.deleteImage', ['id' => $certificate->id]) }}" 
-                          method="POST" 
-                          style="margin-top: 10px; text-align: right;">
-                        @csrf
-                        @method('DELETE')
-                        <input type="hidden" name="image" value="{{ $img }}">
-                        <button type="submit" class="btn btn-danger btn-sm">🗑 حذف الصورة</button>
-                    </form>
+                        <div class="card-body d-flex flex-column">
+                            {{-- رابط التحميل أو العرض --}}
+                            <a href="{{ asset('storage/' . $img) }}" target="_blank" class="btn btn-primary btn-sm mb-2 w-100">
+                                🔗 عرض / تحميل الصورة
+                            </a>
 
-                    {{-- رابط التحميل أو العرض المباشر --}}
-                    <a href="{{ asset('storage/' . $img) }}" target="_blank" class="btn btn-link btn-sm mt-1" style="display:block;">🔗 عرض الصورة</a>
+                            {{-- زر الحذف --}}
+                            <form action="{{ route('certificates.deleteImage', ['id' => $certificate->id]) }}" 
+                                  method="POST" 
+                                  onsubmit="return confirm('هل أنت متأكد من حذف هذه الصورة؟');">
+                                @csrf
+                                @method('DELETE')
+                                <input type="hidden" name="image" value="{{ $img }}">
+                                <button type="submit" class="btn btn-danger btn-sm w-100">🗑 حذف</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             @endforeach
         </div>
     @else
-        <p>لا توجد صور لهذه الشهادة.</p>
+        <p class="text-center text-muted mt-4">لا توجد صور لهذه الشهادة.</p>
     @endif
 
-    {{-- زر الطباعة --}}
-    <button onclick="window.print()" class="btn btn-primary mt-3">🖨 طباعة</button>
-
-    <a href="{{ route('certificates.search.form') }}" class="btn btn-outline-primary mt-3">🔙 العودة للبحث</a>
+    {{-- زر العودة --}}
+    <div class="mt-4 text-center">
+        <a href="{{ route('certificates.search.form') }}" class="btn btn-outline-primary">
+            🔙 العودة للبحث
+        </a>
+    </div>
 </div>
 @endsection

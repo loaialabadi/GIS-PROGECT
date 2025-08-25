@@ -129,6 +129,11 @@ Route::post('tracking-certificates/store-from-existing', [TrackingCertificateCon
     ->name('tracking_certificates.update_status');
 
 
+Route::get('/tracking/review', [TrackingCertificateController::class, 'reviewByStatus'])->name('tracking.review');
+Route::get('/tracking/delivery', [TrackingCertificateController::class, 'deliveryByStatus'])->name('tracking.delivery');
+Route::get('/tracking/stifaa', [TrackingCertificateController::class, 'stifaa'])->name('tracking.stifaa');
+Route::get('/tracking-certificates/all', [TrackingCertificateController::class, 'all'])
+    ->name('tracking_certificates.all');
 
     Route::post('/search', [TrackingCertificateController::class, 'searchByTransactionNumber'])
     ->name('certificates.search');

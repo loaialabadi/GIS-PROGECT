@@ -32,7 +32,8 @@ public function store(Request $request)
         'center_name'         => 'nullable|string|max:255',
         'area'                => 'nullable|string|max:255',
         'notes'               => 'nullable|string',
-        'gis_name'            => 'nullable|string|max:255',
+        'gis_preparer_name'            => 'nullable|string|max:255',
+        'gis_reviewer_name'            => 'nullable|string|max:255',
         'tracking_status'     => 'nullable|array',  // مصفوفة حالة التتبع
         'inspector_name'      => 'nullable|string|max:255',
         'selected_tracking'   => 'nullable|array',  // التواريخ المختارة
@@ -44,7 +45,8 @@ public function store(Request $request)
             'client_name', 'national_id', 'transaction_number',
             'building_description', 'project_name', 'area',
             'purpose', 'coordinates', 'notes',
-            'inspector_name', 'center_name', 'gis_name',
+            'inspector_name', 'center_name', 'gis_preparer_name',
+            'gis_reviewer_name',
             'certificate_path'
         ]);
 
@@ -74,37 +76,36 @@ public function store(Request $request)
         $validated['transaction_id'] = $transaction->id;
 
         // ترميز حالة التتبع والتواريخ المحددة
-        $validated['tracking_status'] = json_encode($request->input('tracking_status', []));
-        $validated['selected_tracking'] = json_encode($request->input('selected_tracking', []));
-
-        // معالجة الصورة المؤقتة إذا وجدت
+    $validated['tracking_status'] = $request->input('tracking_status', []);
+    $validated['selected_tracking'] = $request->input('selected_tracking', []);
+            // معالجة الصورة المؤقتة إذا وجدت
     if ($request->filled('certificate_path_temp')) {
         $tempPath = $request->input('certificate_path_temp'); 
 
-        // تحقق أن الملف موجود داخل storage/app/public
         if (Storage::exists('public/' . $tempPath)) {
+        // الفولدر = رقم المعاملة فقط
+        $folderName = $transaction->transaction_number;
 
-            // استبدال الأحرف غير الصالحة في اسم المجلد
-            $folderName = preg_replace('/[^A-Za-z0-9_\-]/u', '_', $transaction->transaction_number . '_' . $validated['client_name']);
+        // اسم الملف = رقم المعاملة + الامتداد
+        $extension = pathinfo($tempPath, PATHINFO_EXTENSION) ?: 'jpg';
+        $finalPath = "certificates/{$folderName}/{$folderName}.{$extension}";
 
-            $finalFolder = 'certificates/' . $folderName;
-            $finalPath = $finalFolder . '/' . basename($tempPath);
 
-            // إنشاء المجلد النهائي إذا لم يكن موجودًا
-            if (!Storage::exists('public/' . $finalFolder)) {
-                Storage::makeDirectory('public/' . $finalFolder, 0777, true);
+            // إنشاء المجلد لو مش موجود
+            if (!Storage::exists('public/certificates/' . $folderName)) {
+                Storage::makeDirectory('public/certificates/' . $folderName, 0777, true);
             }
 
-            // نقل الملف إلى المجلد النهائي
+            // نقل الملف و إعادة تسميته
             Storage::move('public/' . $tempPath, 'public/' . $finalPath);
 
-            // حفظ المسار النهائي في العمود certificate_path
+            // حفظ المسار النهائي
             $validated['certificate_path'] = $finalPath;
         } else {
-            // إذا الملف غير موجود
             $validated['certificate_path'] = null;
         }
     }
+
 
 
         // إنشاء سجل جديد لشهادة التتبع
@@ -129,22 +130,20 @@ public function saveTemporaryImage(Request $request)
     $request->validate([
         'image' => 'required|image',
         'transaction_number' => 'required',
-        'client_name' => 'required',
     ]);
 
     $transactionNumber = $request->input('transaction_number');
-    $clientName = str_replace(['/', '\\', ' '], '_', $request->input('client_name'));
 
-    // إنشاء اسم المجلد بناءً على رقم المعاملة واسم العميل
-    $folder = "certificates/{$transactionNumber}_{$clientName}";
+    // الفولدر برقم المعاملة فقط
+    $folder = "certificates/temp/{$transactionNumber}";
 
-    // حفظ الصورة مؤقتًا داخل storage/app/public
+    // نحفظ الصورة مؤقتًا داخل storage/app/public
     $path = $request->file('image')->store($folder, 'public');
 
     return response()->json([
         'status' => 'success',
         'message' => '✅ تم حفظ الشهادة مؤقتًا',
-        'path' => Storage::url($path) // رابط للوصول للصورة من public/storage
+        'path' => $path // نخليها كـ path عادي (من غير Storage::url) عشان نستخدمه بعدين في move
     ]);
 }
 public function edit($id)
@@ -152,6 +151,7 @@ public function edit($id)
     $certificate = TrackingCertificate::findOrFail($id);
     return view('manual.tracking.edit', compact('certificate'));
 }
+
 
 public function update(Request $request, $id)
 {
@@ -184,30 +184,51 @@ public function updateStatus(Request $request, $id)
 }
 
 
-public function reviewByStatus($status)
-{
-    $statuses = [1, 3]; // القيم اللي عايز تجيبها
-    $certificates = \App\Models\TrackingCertificate::whereIn('delivery_status', $statuses)->get();
+ // دالة موحدة لجلب الشهادات حسب الحالة والبحث
+    public function filterByStatus(Request $request, array $statuses, $view, $statusLabel = null)
+    {
+        $query = TrackingCertificate::query()
+            ->whereIn('delivery_status', $statuses);
 
-    return view('manual.tracking.review', compact('certificates', 'statuses'));
-}
+        // البحث برقم المعاملة أو اسم العميل
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('transaction_number', 'like', "%$search%")
+                  ->orWhere('client_name', 'like', "%$search%");
+            });
+        }
 
-public function deliveryByStatus($status)
-{
-     $statuses = [4, 5]; // القيم اللي عايز تجيبها
-    $certificates = \App\Models\TrackingCertificate::whereIn('delivery_status', $statuses)->get();
+        $certificates = $query->get();
 
-    return view('manual.tracking.delivery', compact('certificates', 'status'));
-}
+        return view($view, [
+            'certificates' => $certificates,
+            'status' => $statusLabel,
+            'statuses' => $statuses,
+            'search' => $request->search
+        ]);
+    }
 
-public function stifaa()
-{
-    // نفترض أن الاستيفاء حالته رقم 3 مثلاً
-    $status = "استيفاء";
-    $certificates = TrackingCertificate::where('delivery_status', 2)->get();
+    public function reviewByStatus(Request $request)
+    {
+        return $this->filterByStatus($request, [1, 3], 'manual.tracking.review', 'مراجعة');
+    }
 
-    return view('manual.tracking.stifaa', compact('certificates', 'status'));
-}
+    public function deliveryByStatus(Request $request)
+    {
+        return $this->filterByStatus($request, [4, 5], 'manual.tracking.delivery', 'تسليم');
+    }
+
+    public function stifaa(Request $request)
+    {
+        return $this->filterByStatus($request, [2], 'manual.tracking.stifaa', 'استيفاء');
+    }
+
+
+
+
+
+
 
 public function deleteImage(Request $request, $id)
 {
@@ -254,7 +275,8 @@ public function storeFromExisting(Request $request)
         'center_name' => 'nullable|string|max:255',
         'area' => 'nullable|string|max:255',
         'notes' => 'nullable|string',
-        'gis_name' => 'nullable|string|max:255',
+        'gis_preparer_name' => 'nullable|string|max:255',
+        'gis_reviewer_name' => 'nullable|string|max:255',
         'inspector_name' => 'nullable|string|max:255',
         'tracking_status' => 'nullable|array',
         'certificate_file' => 'nullable|image|max:2048', // رفع صورة جديدة
@@ -323,36 +345,65 @@ public function searchByTransactionNumber(Request $request)
     
 
 
-    public function showCertificateImages($id)
-    {
-        $certificate = TrackingCertificate::findOrFail($id);
+public function showCertificateImages($id)
+{
+    $certificate = TrackingCertificate::findOrFail($id);
 
-        // اسم المجلد حسب رقم المعاملة واسم العميل، مع استبدال الأحرف الغير صالحة
-        $folderName = preg_replace('/[^A-Za-z0-9\-_]/u', '_', $certificate->transaction_number . '_' . $certificate->client_name);
-        $folderPath = storage_path('app/public/certificates/' . $folderName);
+    // الفولدر النهائي
+    $folderName = $certificate->transaction_number;
+    $folderPath = storage_path('app/public/certificates/' . $folderName);
 
-        $images = [];
-        if (File::exists($folderPath)) {
-            foreach (File::files($folderPath) as $file) {
-                // مسار نسبي بالنسبة للـ storage link
-                $images[] = 'certificates/' . $folderName . '/' . $file->getFilename();
-            }
-        }
-
-        return view('search.certificate_images', compact('certificate', 'images'));
+    // إذا الفولدر النهائي فاضي، نفحص فولدر temp
+    if (!File::exists($folderPath) || count(File::files($folderPath)) === 0) {
+        $folderPath = storage_path('app/public/certificates/temp/' . $folderName);
     }
+
+    $images = [];
+    if (File::exists($folderPath)) {
+        foreach (File::files($folderPath) as $file) {
+            $images[] = 'certificates/' 
+                        . str_replace(storage_path('app/public/certificates/'), '', $folderPath) 
+                        . '/' . $file->getFilename();
+        }
+    }
+
+    return view('search.certificate_images', compact('certificate', 'images'));
+}
 
     // حذف صورة محددة
-    public function deleteCertificateImage(Request $request, $id)
-    {
-        $certificate = TrackingCertificate::findOrFail($id);
-        $image = $request->input('image');
+public function deleteCertificateImage(Request $request, $id)
+{
+    $certificate = TrackingCertificate::findOrFail($id);
+    $image = $request->input('image'); // مثال: certificates/temp/98$/certificate.png
 
-        if ($image && Storage::exists('public/' . $image)) {
-            Storage::delete('public/' . $image);
-        }
+    // تحويل المسار النسبي إلى مسار كامل على السيرفر
+    $fullPath = storage_path('app/public/' . $image);
 
-        return redirect()->back()->with('success', 'تم حذف الصورة بنجاح.');
+    if (File::exists($fullPath)) {
+        File::delete($fullPath);
+        return redirect()->back()->with('success', '✅ تم حذف الصورة بنجاح.');
     }
+
+    return redirect()->back()->with('error', '❌ الصورة غير موجودة أو غير صالحة.');
+}
+
+
+
+public function all(Request $request)
+{
+    $query = TrackingCertificate::query();
+
+    if ($request->filled('search')) {
+        $search = $request->search;
+        $query->where(function($q) use ($search) {
+            $q->where('transaction_number', 'like', "%$search%")
+              ->orWhere('client_name', 'like', "%$search%");
+        });
+    }
+
+    $certificates = $query->get();
+
+    return view('transactions.index', compact('certificates'));
+}
 }
 

@@ -4,11 +4,13 @@
 <div class="container">
     <h2>تسليم الشهادات</h2>
 
-    <form method="GET" action="{{ route('tracking_certificates.delivery', ['status' => 'pending']) }}">
-        <label for="transaction_number">رقم المعاملة:</label>
-        <input type="text" name="transaction_number" id="transaction_number" value="{{ request('transaction_number') }}">
+    {{-- فورم البحث --}}
+    <form method="GET" action="{{ url()->current() }}" class="mb-3 d-flex">
+        <input type="text" name="search" class="form-control me-2"
+               placeholder="ابحث برقم المعاملة أو اسم العميل"
+               value="{{ request('search') }}">
         <button type="submit" class="btn btn-primary">بحث</button>
-        <a href="{{ route('tracking_certificates.delivery', ['status' => 'pending']) }}" class="btn btn-secondary">عرض الكل</a>
+        <a href="{{ url()->current() }}" class="btn btn-secondary ms-2">عرض الكل</a>
     </form>
 
     @if(count($certificates) > 0)
@@ -37,45 +39,41 @@
                 @endphp
 
                 @foreach($certificates as $certificate)
-                    @if(!request('transaction_number') || $certificate->transaction_number == request('transaction_number'))
-                        <tr>
-                            <td>{{ $certificate->id }}</td>
-                            <td>{{ $certificate->transaction_number }}</td>
-                            <td>{{ $certificate->client_name }}</td>
-                            <td>
-                                <span id="status-{{ $certificate->id }}">
-                                    {{ $statusLabels[$certificate->delivery_status] ?? 'لا توجد بيانات' }}
-                                </span>
-                            </td>
-                            <td>{{ $certificate->notes }}</td>
-                            <td>{{ $certificate->created_at }}</td>
-                            <td>
-                                <div class="btn-group flex-wrap">
-                                    @if($certificate->delivery_status != 5)
-                                        <button class="btn btn-danger btn-sm mb-1" id="btn-receive-{{ $certificate->id }}"
-                                            onclick="receiveFromSystem({{ $certificate->id }})">
-                                            استلام من النظم
-                                        </button>
-                                    @endif
-
-                                    @if($certificate->delivery_status == 5)
-                                        <button class="btn btn-success btn-sm mb-1" id="btn-deliver-{{ $certificate->id }}"
-                                            onclick="deliverToClient({{ $certificate->id }})">
-                                            تسليم للعميل
-                                        </button>
-                                    @endif
-                                </div>
-                            </td>
-                        </tr>
-                    @endif
+                    <tr>
+                        <td>{{ $certificate->id }}</td>
+                        <td>{{ $certificate->transaction_number }}</td>
+                        <td>{{ $certificate->client_name }}</td>
+                        <td>
+                            <span id="status-{{ $certificate->id }}">
+                                {{ $statusLabels[$certificate->delivery_status] ?? 'لا توجد بيانات' }}
+                            </span>
+                        </td>
+                        <td>{{ $certificate->notes }}</td>
+                        <td>{{ $certificate->created_at }}</td>
+                        <td>
+                            <div class="btn-group flex-wrap">
+                                @if($certificate->delivery_status != 5)
+                                    <button class="btn btn-danger btn-sm mb-1" 
+                                            id="btn-receive-{{ $certificate->id }}"
+                                            onclick="updateStatus({{ $certificate->id }}, 5, true)">
+                                        استلام من النظم
+                                    </button>
+                                @else
+                                    <button class="btn btn-success btn-sm mb-1" 
+                                            id="btn-deliver-{{ $certificate->id }}"
+                                            onclick="updateStatus({{ $certificate->id }}, 6, false)">
+                                        تسليم للعميل
+                                    </button>
+                                @endif
+                            </div>
+                        </td>
+                    </tr>
                 @endforeach
             </tbody>
         </table>
     @else
         <p class="text-muted mt-3">لا توجد شهادات لهذه الحالة.</p>
     @endif
-
-    <a href="{{ url()->previous() }}" class="btn btn-secondary mt-3">🔙 العودة</a>
 </div>
 @endsection
 
@@ -90,37 +88,8 @@ const statusText = {
     6: 'تم التسليم للعميل',
 };
 
-function receiveFromSystem(id) {
-    fetch(`/tracking-certificates/${id}/update-status`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: JSON.stringify({ status: 5 })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            document.getElementById('status-' + id).innerText = statusText[5];
-            const btn = document.getElementById('btn-receive-' + id);
-            if (btn) btn.remove();
-
-            const deliverBtn = document.createElement('button');
-            deliverBtn.className = 'btn btn-success btn-sm mb-1';
-            deliverBtn.id = 'btn-deliver-' + id;
-            deliverBtn.innerText = 'تسليم للعميل';
-            deliverBtn.onclick = function() { deliverToClient(id); };
-            btn.parentNode.appendChild(deliverBtn);
-        } else {
-            alert(data.message || 'حدث خطأ أثناء تحديث الحالة');
-        }
-    })
-    .catch(err => console.error(err));
-}
-
-function deliverToClient(id) {
-    if(!confirm('هل أنت متأكد من تسليم الشهادة للعميل؟')) return;
+function updateStatus(id, status, isReceive) {
+    if(!isReceive && !confirm('هل أنت متأكد من تسليم الشهادة للعميل؟')) return;
 
     fetch(`/tracking-certificates/${id}/update-status`, {
         method: 'POST',
@@ -128,14 +97,25 @@ function deliverToClient(id) {
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': '{{ csrf_token() }}'
         },
-        body: JSON.stringify({ status: 6 })
+        body: JSON.stringify({ status: status })
     })
     .then(res => res.json())
     .then(data => {
         if (data.success) {
-            document.getElementById('status-' + id).innerText = statusText[6];
-            const btn = document.getElementById('btn-deliver-' + id);
-            if (btn) btn.remove();
+            document.getElementById('status-' + id).innerText = statusText[status];
+
+            // تعديل الأزرار بعد التغيير
+            const btn = document.getElementById(isReceive ? 'btn-receive-' + id : 'btn-deliver-' + id);
+            if(btn) btn.remove();
+
+            if(isReceive) {
+                const deliverBtn = document.createElement('button');
+                deliverBtn.className = 'btn btn-success btn-sm mb-1';
+                deliverBtn.id = 'btn-deliver-' + id;
+                deliverBtn.innerText = 'تسليم للعميل';
+                deliverBtn.onclick = function() { updateStatus(id, 6, false); };
+                btn.parentNode.appendChild(deliverBtn);
+            }
         } else {
             alert(data.message || 'حدث خطأ أثناء تحديث الحالة');
         }

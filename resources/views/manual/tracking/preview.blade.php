@@ -11,7 +11,7 @@
   }
   .container {
     display: flex;
-    max-width: 1200px;
+    width: 1400px;
     margin: auto;
     background: #fff;
     border: 2px solid black;
@@ -290,25 +290,40 @@
     <textarea id="notes" name="notes" class="form-control" rows="3">{{ $data['notes'] ?? '' }}</textarea>
   </div>
 <!-- جدول التوقيعات -->
-
 <table border="1" cellspacing="0" cellpadding="10" style="border-collapse: collapse; width: 100%; margin-top: 20px; text-align: center; font-size: 14px;">
   <tr>
     <th>خدمة عملاء</th>
     <th>أعمال رفع ميداني</th>
-    <th>أعمال GIS</th>
+    <th colspan="2">أعمال GIS</th>
   </tr>
   <tr>
     <td>
       <div><strong>الاسم:</strong> منى عبدالفتاح</div><br>
-      <div style="border-top: 1px solid #000; margin-top: 10px;"><strong>التوقيع:.........</strong> {{ $data['customer_service_sign'] ?? '' }}</div>
+      <div style="border-top: 1px solid #000; margin-top: 10px;">
+        <strong>التوقيع:.........</strong> {{ $data['customer_service_sign'] ?? '' }}
+      </div>
     </td>
     <td>
       <div><strong>الاسم:</strong> {{ $data['inspector_name'] ?? '' }}</div><br>
-      <div style="border-top: 1px solid #000; margin-top: 10px;"><strong>التوقيع:..........</strong> {{ $data['field_survey_sign'] ?? '' }}</div>
+      <div style="border-top: 1px solid #000; margin-top: 10px;">
+        <strong>التوقيع:..........</strong> {{ $data['field_survey_sign'] ?? '' }}
+      </div>
     </td>
+    <!-- GIS - إعداد -->
     <td>
-      <div><strong>الاسم:</strong> {{ $data['gis_name'] ?? '' }}</div><br>
-      <div style="border-top: 1px solid #000; margin-top: 10px;"><strong>التوقيع:.........</strong> {{ $data['gis_sign'] ?? '' }}</div>
+      <div><strong>الإعداد</strong></div><br>
+      <div><strong>الاسم:</strong> {{ $data['gis_preparer_name'] ?? '' }}</div><br>
+      <div style="border-top: 1px solid #000; margin-top: 10px;">
+        <strong>التوقيع:.........</strong> 
+      </div>
+    </td>
+    <!-- GIS - مراجعة -->
+    <td>
+      <div><strong>المراجعة</strong></div><br>
+      <div><strong>الاسم:</strong> {{ $data['gis_reviewer_name'] ?? '' }}</div><br>
+      <div style="border-top: 1px solid #000; margin-top: 10px;">
+        <strong>التوقيع:.........</strong> 
+      </div>
     </td>
   </tr>
 </table>
@@ -340,7 +355,7 @@
 
   <!-- العمود الأوسط والأيسر -->
   <div class="left-columns">
-    <div class="certificate-title">📄 شهادة تتبع زمني لمنشأ</div>
+    <div class="certificate-title">شهادة تتبع زمني لمنشأ</div>
 
     <!-- 4 صور -->
 <div class="photos-container">
@@ -370,16 +385,16 @@
     @endforeach
 </div>
 
-
+<div class="footer-text">
+  تم الإرشاد عن الموقع بمعرفة مقدم الطلب وذلك دون أدنى مسؤولية على مركز معلومات شبكات المرافق بقنا - لا يعتد بهذا البيان كمستند ملكية - لا يستخدم هذا البيان إلا في الغرض المحرر من أجله.
+</div>
     <!-- باقي محتوى الشهادة -->
 
   </div>
 
 </div>
 
-<div class="footer-text">
-  تم الإرشاد عن الموقع بمعرفة مقدم الطلب وذلك دون أدنى مسؤولية على مركز معلومات شبكات المرافق بقنا - لا يعتد بهذا البيان كمستند ملكية - لا يستخدم هذا البيان إلا في الغرض المحرر من أجله.
-</div>
+
 <button onclick="saveCertificate()" class="btn btn-success">
     🖼 حفظ الشهادة كصورة
 </button>
@@ -388,14 +403,12 @@
 <script>
 function saveCertificate() {
     let container = document.querySelector('.container');
-    let clientName = "{{ $data['client_name'] ?? 'unknown' }}";
     let transactionNumber = "{{ $data['transaction_number'] ?? '0000' }}";
 
-    html2canvas(container, { scale: 2 }).then(canvas => {
+    html2canvas(container, { scale: 2}).then(canvas => {
         canvas.toBlob(function(blob) {
             let formData = new FormData();
             formData.append("image", blob, "certificate.png");
-            formData.append("client_name", clientName);
             formData.append("transaction_number", transactionNumber);
 
             fetch("{{ route('tracking_certificates.save_temp_image') }}", {
@@ -407,7 +420,7 @@ function saveCertificate() {
             .then(data => {
                 if(data.status === 'success'){
                     alert(data.message);
-                    console.log("رابط الصورة:", data.path);
+                    console.log("📂 رابط الصورة:", data.path);
                 } else {
                     alert("❌ لم يتم الحفظ");
                 }
@@ -420,29 +433,76 @@ function saveCertificate() {
 </script>
 
 <script>
-  function allowDrop(ev) {
-      ev.preventDefault();
-  }
-  function drop(ev, element) {
-      ev.preventDefault();
-      const file = ev.dataTransfer.files[0];
+function saveCertificate() {
+    let container = document.querySelector('.container');
+    let transactionNumber = "{{ $data['transaction_number'] ?? '0000' }}";
 
-      if (file && file.type.startsWith("image/")) {
-          const reader = new FileReader();
-          reader.onload = function(e) {
-              element.innerHTML = '<img src="' + e.target.result + '" alt="صورة">';
-          }
-          reader.readAsDataURL(file);
-      } else {
-          alert("يرجى سحب صورة فقط");
-      }
-  }
+    html2canvas(container, { scale: 1.2 }).then(canvas => {
+        canvas.toBlob(function(blob) {
+            let formData = new FormData();
+            formData.append("image", blob, "certificate.jpg"); // JPEG بدل PNG
+            formData.append("transaction_number", transactionNumber);
+
+            fetch("{{ route('tracking_certificates.save_temp_image') }}", {
+                method: "POST",
+                headers: { "X-CSRF-TOKEN": "{{ csrf_token() }}" },
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === 'success'){
+                    alert(data.message);
+                    console.log("📂 رابط الصورة:", data.path);
+                } else {
+                    alert("❌ لم يتم الحفظ");
+                }
+            })
+            .catch(err => alert("❌ خطأ أثناء الحفظ"));
+        }, "image/jpeg", 0.85); // صيغة + جودة
+    });
+}
+
+// السماح بالسحب
+function allowDrop(ev) {
+    ev.preventDefault();
+}
+
+// عند إسقاط صورة
+function drop(ev, element) {
+    ev.preventDefault();
+    const file = ev.dataTransfer.files[0];
+
+    if (file && file.type.startsWith("image/")) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            let img = new Image();
+            img.onload = function() {
+                // نصغّر الصورة قبل عرضها
+                let maxWidth = 800; // العرض الأقصى
+                let scale = Math.min(1, maxWidth / img.width);
+
+                let canvas = document.createElement("canvas");
+                canvas.width = img.width * scale;
+                canvas.height = img.height * scale;
+
+                let ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                // عرض الصورة المصغرة
+                element.innerHTML = '<img src="' + canvas.toDataURL("image/jpeg",0.8) + '" style="max-width:100%; border-radius:10px;">';
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    } else {
+        alert("يرجى سحب صورة فقط");
+    }
+}
+</script>
 
 
 
-
-
- 
+ <script>
 function printCertificate() {
     // أخفِ الزر قبل الطباعة
     document.getElementById('printBtn').style.display = 'none';

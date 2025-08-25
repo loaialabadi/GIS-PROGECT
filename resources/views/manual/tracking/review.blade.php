@@ -4,6 +4,15 @@
 <div class="container">
     <h2>الشهادات التي لم يتم مراجعتها</h2>
 
+    {{-- فورم البحث --}}
+    <form method="GET" action="{{ route('tracking.review') }}" class="mb-3 d-flex">
+        <input type="text" name="search" class="form-control me-2" 
+               placeholder="ابحث برقم المعاملة أو اسم العميل"
+               value="{{ request('search') }}">
+        <button type="submit" class="btn btn-primary">بحث</button>
+        <a href="{{ route('tracking.review') }}" class="btn btn-secondary ms-2">عرض الكل</a>
+    </form>
+
     @if(count($certificates) > 0)
         <table class="table table-bordered text-center align-middle">
             <thead class="table-light">

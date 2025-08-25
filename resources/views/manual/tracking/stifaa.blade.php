@@ -1,20 +1,17 @@
 @extends('layout')
 
 @section('content')
-
-<div class="container">
-    <h2>البحث عن شهادة برقم المعاملة</h2>
-
-    <form method="GET" action="{{ route('tracking_certificates.stifaa') }}">
-        <label for="transaction_number">رقم المعاملة:</label>
-        <input type="text" name="transaction_number" id="transaction_number" value="{{ request('transaction_number') }}">
-        <button type="submit" class="btn btn-primary">بحث</button>
-        <a href="{{ route('tracking_certificates.stifaa') }}" class="btn btn-secondary">عرض الكل</a>
-    </form>
-</div>
-
 <div class="container mt-4">
     <h2>الشهادات التي بها استيفاء</h2>
+
+    {{-- فورم البحث --}}
+    <form method="GET" action="{{ url()->current() }}" class="mb-3 d-flex">
+        <input type="text" name="search" class="form-control me-2"
+               placeholder="ابحث برقم المعاملة أو اسم العميل"
+               value="{{ request('search') }}">
+        <button type="submit" class="btn btn-primary">بحث</button>
+        <a href="{{ url()->current() }}" class="btn btn-secondary ms-2">عرض الكل</a>
+    </form>
 
     @if(count($certificates) > 0)
         <table class="table table-bordered text-center align-middle">
@@ -30,36 +27,46 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($certificates as $certificate)
-                    @if(!request('transaction_number') || $certificate->transaction_number == request('transaction_number'))
-                        <tr>
-                            <td>{{ $certificate->id }}</td>
-                            <td>{{ $certificate->transaction_number }}</td>
-                            <td>{{ $certificate->client_name }}</td>
-                            <td>
-                                <span id="status-{{ $certificate->id }}">
-                                    {{ $certificate->delivery_status }}
-                                </span>
-                            </td>
-                            <td>{{ $certificate->notes }}</td>
-                            <td>{{ $certificate->created_at }}</td>
-                            <td>
-                                <div class="btn-group flex-wrap">
-                                    <a href="{{ route('tracking_certificates.edit', $certificate->id) }}" class="btn btn-warning btn-sm mb-1">
-                                        تعديل بيانات
-                                    </a>
+                @php
+                    $statusLabels = [
+                        1 => 'في صفحة المراجعة',
+                        2 => 'استيفاء',
+                        3 => 'تمت المراجعة',
+                        4 => 'تم التسليم إلى خدمة العملاء'
+                    ];
+                @endphp
 
-                                    <button class="btn btn-success btn-sm mb-1" onclick="updateStatus({{ $certificate->id }}, 3)">
+                @foreach($certificates as $certificate)
+                    <tr>
+                        <td>{{ $certificate->id }}</td>
+                        <td>{{ $certificate->transaction_number }}</td>
+                        <td>{{ $certificate->client_name }}</td>
+                        <td>
+                            <span id="status-{{ $certificate->id }}">
+                                {{ $statusLabels[$certificate->delivery_status] ?? 'لا توجد بيانات' }}
+                            </span>
+                        </td>
+                        <td>{{ $certificate->notes }}</td>
+                        <td>{{ $certificate->created_at }}</td>
+                        <td>
+                            <div class="btn-group flex-wrap">
+                                <a href="{{ route('tracking_certificates.edit', $certificate->id) }}" class="btn btn-warning btn-sm mb-1">
+                                    تعديل بيانات
+                                </a>
+
+                                @if($certificate->delivery_status != 3)
+                                    <button class="btn btn-success btn-sm mb-1" 
+                                            onclick="updateStatus({{ $certificate->id }}, 3)">
                                         تمت المراجعة
                                     </button>
+                                @endif
 
-                                    <a href="{{ route('tracking_certificates.images', $certificate->id) }}" class="btn btn-info btn-sm mb-1" target="_blank">
-                                        🖼 عرض الصور
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                    @endif
+                                <a href="{{ route('certificates.showImages', $certificate->id) }}" class="btn btn-info btn-sm mb-1" target="_blank">
+                                    🖼 عرض الصور
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
                 @endforeach
             </tbody>
         </table>
@@ -69,7 +76,6 @@
 
     <a href="{{ url()->previous() }}" class="btn btn-secondary mt-3">🔙 العودة</a>
 </div>
-
 @endsection
 
 @push('scripts')
@@ -93,7 +99,7 @@ function updateStatus(id, status) {
     .then(res => res.json())
     .then(data => {
         if (data.success) {
-            document.getElementById('status-' + id).innerText = statusText[data.newStatus] || data.newStatus;
+            document.getElementById('status-' + id).innerText = statusText[status];
         } else {
             alert(data.message || 'حدث خطأ أثناء تحديث الحالة');
         }

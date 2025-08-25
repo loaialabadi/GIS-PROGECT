@@ -96,29 +96,48 @@
             </select>
         </div>
 
-        {{-- تعديل التواريخ الموجودة فقط --}}
-        <h5>تعديل وصف المتابعة لكل تاريخ موجود:</h5>
+<h5>تعدي وصف المتابعة لكل تاريخ موجود:</h5>
 @php
-    $trackingStatusRaw = old('tracking_status', $certificate->tracking_status ?? []);
-    $trackingStatus = is_string($trackingStatusRaw) ? json_decode($trackingStatusRaw, true) : $trackingStatusRaw;
+    $trackingStatusRaw = old('tracking_status');
+    $trackingStatus = is_array($trackingStatusRaw) 
+                        ? $trackingStatusRaw 
+                        : ($certificate->tracking_status ?? []);
 @endphp
-@if(is_array($trackingStatus) && count($trackingStatus) > 0)
+
+
+@if(count($trackingStatus) > 0)
     @foreach($trackingStatus as $date => $status)
         <div class="mb-2 border p-2 rounded">
             <label class="form-label"><strong>{{ $date }}</strong></label>
-            <input type="text" class="form-control" name="tracking_status[{{ $date }}]" value="{{ $status }}" placeholder="أدخل وصف المتابعة">
+            <input type="text" class="form-control" 
+                   name="tracking_status[{{ $date }}]" 
+                   value="{{ $status ?? '' }}" 
+                   placeholder="أدخل وصف المتابعة">
         </div>
     @endforeach
 @else
     <p>لا توجد بيانات تتبع لتعديلها.</p>
 @endif
 
+
         {{-- بيانات GIS --}}
-        <h5>بيانات GIS</h5>
+        <h5>بيانات GIS</h5> 
         <div class="mb-3">
-            <label for="gis_name" class="form-label">اسم مسؤول GIS</label>
-            <input type="text" id="gis_name" name="gis_name" class="form-control" value="{{ old('gis_name', $certificate->gis_name) }}">
+            <label for="gis_preparer_name" class="form-label">اسم مسؤول GIS اعداد</label>
+            <input type="text" id="gis_preparer_name" name="gis_preparer_name" class="form-control" 
+                value="{{ old('gis_preparer_name', $certificate->gis_preparer_name) }}">
+            @error('gis_preparer_name')<small class="text-danger">{{ $message }}</small>@enderror
         </div>
+
+
+        <div class="mb-3">
+            <label for="gis_reviewer_name" class="form-label">اسم مسؤول GIS مراجعة</label>
+            <input type="text" id="gis_reviewer_name" name="gis_reviewer_name" class="form-control" 
+                value="{{ old('gis_reviewer_name', $certificate->gis_reviewer_name) }}">
+            @error('gis_reviewer_name')<small class="text-danger">{{ $message }}</small>@enderror
+        </div>
+
+        
 <a href="{{ route('tracking_certificates.create_from_existing', $certificate->id) }}" 
    class="btn btn-primary btn-sm">
     📄 إنشاء نسخة جديدة

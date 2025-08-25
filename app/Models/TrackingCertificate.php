@@ -20,9 +20,11 @@ protected $fillable = [
     'tracking_date',
     'notes',
     'inspector_name',
-    'gis_name',
+    'gis_preparer_name',
     'certificate_path', // مسار الشهادة
     'tracking_status',  // هنا تضيفه ليتم الحفظ
+    
+    'gis_reviewer_name',
 ];
 
 protected $casts = [

@@ -105,7 +105,7 @@
 
         <!-- حقول حالة التتبع 5 -->
 @php
-    $availableDates = ['8-2020', '4-2005', '2-2011', '9-2009', '7-2016',
+    $availableDates = ['9-2020', '4-2005', '2-2011', '9-2009', '7-2016',
                        '7-2017', '10-2018', '11-2020', '11-2022', '4-2023',
                        '3-2024', '3-2025'];
 
@@ -149,10 +149,14 @@
         <h5>بيانات GIS</h5>
 
         <div class="mb-3">
-            <label for="gis_name" class="form-label">اسم مسؤول GIS</label>
-            <input type="text" id="gis_name" name="gis_name" class="form-control" value="{{ old('gis_name') }}">
+            <label for="gis_preparer_name" class="form-label">اسم مسؤول GIS اعداد</label>
+            <input type="text" id="gis_preparer_name" name="gis_preparer_name" class="form-control" value="{{ old('gis_preparer_name') }}">
         </div>
 
+        <div class="mb-3">
+            <label for="gis_reviewer_name" class="form-label">اسم مسؤول GIS مراجعة</label>
+            <input type="text" id="gis_reviewer_name" name="gis_reviewer_name" class="form-control" value="{{ old('gis_reviewer_name') }}">
+        </div>
   
 
         <!-- زر جديد للمعاينة -->
@@ -169,23 +173,24 @@
 
 
 <script>
-    const clientInput = document.getElementById('client_name');
     const transactionInput = document.getElementById('transaction_number');
     const pathInput = document.getElementById('certificate_path');
 
     function updatePath() {
-        const clientName = clientInput.value.trim();
         const transactionNumber = transactionInput.value.trim();
 
-        if(clientName && transactionNumber) {
-            pathInput.value = `certificates/${transactionNumber}_${clientName}/اسم_الملف_المحفوظ.jpg`;
+        if(transactionNumber) {
+            // اسم الملف = رقم المعاملة فقط
+            pathInput.value = `certificates/${transactionNumber}/${transactionNumber}.jpg`;
         }
     }
 
-    clientInput.addEventListener('input', updatePath);
     transactionInput.addEventListener('input', updatePath);
 </script>
+
 <script>
+
+
     function saveCertificateTemp() {
     let container = document.querySelector('.container');
     html2canvas(container, { scale: 2, useCORS: true }).then(canvas => {
