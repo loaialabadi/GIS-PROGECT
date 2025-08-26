@@ -22,7 +22,7 @@
                     <th>اسم العميل</th>
                     <th>الحالة</th>
                     <th>الملاحظات</th>
-                    <th>تاريخ الإنشاء</th>
+                    <th>المركز</th>
                     <th>الإجراء</th>
                 </tr>
             </thead>
@@ -38,7 +38,7 @@
                             </span>
                         </td>
                         <td>{{ $certificate->notes }}</td>
-                        <td>{{ $certificate->created_at }}</td>
+                        <td>{{ $certificate->center_name}}</td>
                         <td>
                             <div class="btn-group mb-1">
                                 <a href="{{ route('tracking_certificates.edit', $certificate->id) }}" class="btn btn-warning btn-sm">

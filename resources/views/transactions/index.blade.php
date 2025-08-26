@@ -26,12 +26,12 @@
                     <th>الرقم القومي</th>
                     <th>الوصف</th>
                     <th>المركز</th>
-                    <th>المساحة</th>
+                    <th>العنوان</th>
                     <th>الحالة</th>
                     <th>الملاحظات</th>
-                    <th>المفتش</th>
-                    <th>موظف GIS</th>
-                    <th>تاريخ الإنشاء</th>
+                    <th>القائم بالرفع</th>
+                    <th>اعداد GIS</th>
+                    <th>مراجعه gis</th>
                     <th>الإجراء</th>
                 </tr>
             </thead>
@@ -52,8 +52,10 @@
                     </td>
                     <td>{{ $certificate->notes }}</td>
                     <td>{{ $certificate->inspector_name }}</td>
-                    <td>{{ $certificate->gis_name }}</td>
-                    <td>{{ $certificate->created_at }}</td>
+                    <td>{{ $certificate->gis_preparer_name }}</td>
+                    <td>{{ $certificate->gis_reviewer_name }}</td>
+
+                    
                     <td>
                         <div class="btn-group flex-wrap">
                             <a href="{{ route('tracking_certificates.edit', $certificate->id) }}" class="btn btn-warning btn-sm mb-1">
