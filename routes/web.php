@@ -9,15 +9,6 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\UserController;
 
-/*
-|--------------------------------------------------------------------------
-| Authentication Routes
-|--------------------------------------------------------------------------
-*/
-
-
-
-// routes/web.php
 
 
 Route::get('/', function () {
