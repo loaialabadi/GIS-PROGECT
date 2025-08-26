@@ -37,6 +37,8 @@
     <a href="{{ route('tracking_certificates.delivery', ['status' => 'delivered']) }}"><i class="fas fa-truck"></i> <span>خدمة العملاء للتسليم</span></a>
     <a href="{{ route('tracking_certificates.stifaa') }}"><i class="fas fa-check"></i> <span>استيفاء الشهادات</span></a>
     <a href="{{ route('transactions.index') }}"><i class="fas fa-file-alt"></i> <span>الشهادات</span></a>
+        <a href="{{ route('admin.users.index') }}"><i class="fas fa-users-cog"></i> <span>إدارة المستخدمين</span></a>
+
 </div>
 
 <div class="content container">

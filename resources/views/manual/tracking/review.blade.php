@@ -31,7 +31,7 @@
                     <tr>
                         <td>{{ $certificate->id }}</td>
                         <td>{{ $certificate->transaction_number }}</td>
-                        <td>{{ $certificate->client_name }}</td>
+                        <td>{{ $certificate->owner_name }}</td>
                         <td>
                             <span id="status-{{ $certificate->id }}">
                                 {{ $certificate->delivery_status }}
