@@ -162,64 +162,11 @@
 
 
 
-
-
-
-
-
-
-
-@media print {
-  body {
-    background: white;
-    margin: 0;
-    padding: 0;
-  }
-
-  #printBtn {
-    display: none !important;
-  }
-
-@page {
-  size: A3 landscape; /* حجم A3 - عرضي */
-  margin: 1cm;
-}
-
-  html, body {
-    width: auto;
-    height: auto;
-  }
-
-  .container {
-    box-shadow: none !important;
-    border: none !important;
-    padding: 0 !important;
-    margin: 0 auto !important;
-    max-width: 100%;
-  }
-
-  .footer-text {
-    font-size: 12px;
-  }
-}
-
 </style>
 </head>
 <body>
 
-<button onclick="printCertificate()" id="printBtn" style="
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    z-index: 9999;
-    padding: 10px 20px;
-    background-color: #0d6efd;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 16px;
-">🖨️ طباعة الشهادة</button>
+
 
 
 <div class="container">
@@ -266,10 +213,10 @@
 @if (!empty($selectedTracking))
     <table border="1" cellspacing="0" cellpadding="5" style="width: 100%; border-collapse: collapse;">
         <thead>
-            <tr>
-                <th>التاريخ</th>
-                <th>الموقف</th>
-            </tr>
+        <tr>
+            <th style="width: 20%; text-align: center;">التاريخ</th>
+            <th style="width: 80%; text-align: center;">الموقف</th>
+        </tr>
         </thead>
         <tbody>
             @foreach ($selectedTracking as $date)
@@ -285,10 +232,9 @@
 @endif
 
 
-  <div class="mb-3">
-    <label for="notes" class="form-label">ملاحظات</label>
-    <textarea id="notes" name="notes" class="form-control" rows="3">{{ $data['notes'] ?? '' }}</textarea>
-  </div>
+<h5 style="margin-bottom: 10px; font-size: 12px; color: red;">
+    {{ $data['notes'] ?? 'لا توجد ملاحظات' }}
+</h5>
 <!-- جدول التوقيعات -->
 <table border="1" cellspacing="0" cellpadding="10" style="border-collapse: collapse; width: 100%; margin-top: 20px; text-align: center; font-size: 14px;">
   <tr>

@@ -9,10 +9,19 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\UserController;
 
+/*
+|--------------------------------------------------------------------------
+| Authentication Routes
+|--------------------------------------------------------------------------
+*/
+
+
+
+// routes/web.php
 
 
 Route::get('/', function () {
-    return view('layout'); 
+    return view('welcome'); 
 });
 
 // ✅ Auth Routes
@@ -23,7 +32,11 @@ Route::post('register', [AuthController::class, 'register']);
 Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
 // ✅ صفحات محمية للمستخدم المسجل دخول فقط
-
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', function () {
+        return view('layout'); // صفحة للوحة التحكم بعد تسجيل الدخول
+    })->name('dashboard');
+});
 
 // ✅ Admin Routes
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {

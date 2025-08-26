@@ -6,13 +6,15 @@
     <style>
         body { font-family: 'Arial', sans-serif; background: #eee; margin: 0; padding: 20px; }
         
-        .container { display: flex; 
-            width: 1400px; 
-            margin: auto; 
-            background: #fff;
-             border: 2px solid black; 
-             padding: 15px; 
-             box-sizing:  border-box; }
+  .container {
+    display: flex;
+    width: 1400px;
+    margin: auto;
+    background: #fff;
+    border: 2px solid black;
+    padding: 15px;
+    box-sizing: border-box;
+  }
 
         .right-column { flex: 1; border-left: 2px solid black; padding-left: 15px; display: flex; flex-direction: column; }
         .logos { display: flex; justify-content: space-between; gap: 40px; margin-bottom: 20px; }
@@ -22,9 +24,19 @@
             margin-bottom: 5px;
             font-size: 14px;
 }        .logo { width: 60px; height: 60px; object-fit: contain; border: 1px solid black; }
-        table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
-        table, th, td { border: 1px solid black; }
-        td { padding: 6px; font-size: 14px; }
+     table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  table, th, td {
+    border: 1px solid black;
+  }
+  td {
+    padding: 6px;
+    font-size: 14px;
+  }
+
         .left-columns { flex: 2; display: flex; flex-direction: column; padding-right: 15px; }
         .certificate-title { font-size: 24px; font-weight: bold; text-align: center; background: #fde5a6; padding: 12px; border: 1px solid black; margin-bottom: 35px; }
         .photos-container { display: grid; grid-template-columns: repeat(2, 1fr); grid-gap: 15px; margin-bottom: 15px; height: 800px; }
@@ -42,8 +54,6 @@
     </style>
 </head>
 <body>
-    <button onclick="printCertificate()" id="printBtn" style="position: fixed; top: 20px; left: 20px; z-index: 9999; padding: 10px 20px; background-color: #0d6efd; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px;">🖨️ طباعة الشهادة</button>
-    <button onclick="saveCertificate()" id="saveBtn" style="position: fixed; top: 20px; left: 180px; z-index: 9999; padding: 10px 20px; background-color: #198754; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px;">💾 حفظ كصورة</button>
 
     <div class="container">
         <!-- العمود الأيمن -->
@@ -77,25 +87,26 @@
     <!-- جدول التتبع -->
 @if(!empty($trackingStatus) && count($trackingStatus) > 0)
     <h5>حالة التتبع</h5>
-    <table border="1" cellspacing="0" cellpadding="5" style="width: 100%; border-collapse: collapse; text-align:center;">
+    <table border="1" cellspacing="0" cellpadding="5" style="width: 100%; border-collapse: collapse; table-layout: fixed;">
         <tr>
-            <th>التاريخ</th>
-            <th>الموقف</th>
+            <th style="width: 20%; text-align: center;">التاريخ</th>
+            <th style="width: 80%; text-align: center;">الموقف</th>
         </tr>
         @foreach($trackingStatus as $date => $status)
             @if(!empty($status))
                 <tr>
-                    <td>{{ $date }}</td>
-                    <td>{{ $status }}</td>
+                    <td style="text-align: center; vertical-align: middle;">{{ $date }}</td>
+                    <td style="vertical-align: middle; word-wrap: break-word; white-space: pre-wrap;">{{ $status }}</td>
                 </tr>
             @endif
         @endforeach
     </table>
 @endif
-  <div class="mb-3">
-    <label for="notes" class="form-label">ملاحظات</label>
-    <textarea id="notes" name="notes" class="form-control" rows="3">{{ $data['notes'] ?? '' }}</textarea>
-  </div>
+
+<h5 style="margin-bottom: 10px; font-size: 12px; color: red;">
+    {{ $data['notes'] ?? 'لا توجد ملاحظات' }}
+</h5>
+
 <table border="1" cellspacing="0" cellpadding="10" style="border-collapse: collapse; width: 100%; margin-top: 20px; text-align: center; font-size: 14px;">
   <tr>
     <th>خدمة عملاء</th>

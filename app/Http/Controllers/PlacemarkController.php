@@ -148,10 +148,7 @@ public function index()
     |--------------------------------------------------------------------------
     */
 
-    public function layout()
-    {
-        return view('layout');
-    }
+
 
     // توليد شهادة يدوية من البيانات (اختياري)
     public function generateManualCertificate(Request $request)
