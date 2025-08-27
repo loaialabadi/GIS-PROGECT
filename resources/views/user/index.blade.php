@@ -21,11 +21,7 @@
             <td>{{ $user->role }}</td>
             <td>
                 <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-sm btn-warning">تعديل</a>
-                <form action="{{ route('admin.users.delete', $user) }}" method="POST" style="display:inline-block">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('هل أنت متأكد؟')">حذف</button>
-                </form>
+
             </td>
         </tr>
         @endforeach

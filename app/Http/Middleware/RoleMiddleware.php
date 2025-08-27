@@ -8,12 +8,25 @@ use Illuminate\Support\Facades\Auth;
 
 class RoleMiddleware
 {
-    public function handle(Request $request, Closure $next, $role = null)
+    public function handle(Request $request, Closure $next, ...$roles)
     {
         $user = Auth::user();
-        if (!$user || ($role && $user->role !== $role)) {
+
+        // لو مش لوج ان
+        if (!$user) {
             abort(403, 'غير مصرح لك');
         }
+
+        // admin يدخل أي حاجة
+        if ($user->role === 'admin') {
+            return $next($request);
+        }
+
+        // لو الدور مش موجود في اللستة
+        if (!in_array($user->role, $roles)) {
+            abort(403, 'غير مصرح لك');
+        }
+
         return $next($request);
     }
 }

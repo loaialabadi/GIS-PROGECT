@@ -12,8 +12,11 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            $table->string('phone')->nullable()->unique(); // رقم موبايل (اختياري)
             $table->timestamp('email_verified_at')->nullable();
-            $table->enum('role', ['admin','user'])->default('user'); // الدور
+            $table->enum('role', ['admin', 'customer_service', 'reviewer', 'data_entry'])
+                  ->default('customer_service');
+            $table->boolean('is_active')->default(true); // حالة المستخدم
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();

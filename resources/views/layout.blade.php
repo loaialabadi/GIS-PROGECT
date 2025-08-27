@@ -25,6 +25,8 @@
     <div class="topbar-center">م/ لؤي حمدون</div>
     <div class="actions">
         <i id="toggleSidebar" class="fas fa-bars" title="تبديل القائمة"></i>
+        <span>{{ Auth::user()->name }}</span>
+            
     </div>
 </div>
 
@@ -37,8 +39,14 @@
     <a href="{{ route('tracking_certificates.delivery', ['status' => 'delivered']) }}"><i class="fas fa-truck"></i> <span>خدمة العملاء للتسليم</span></a>
     <a href="{{ route('tracking_certificates.stifaa') }}"><i class="fas fa-check"></i> <span>استيفاء الشهادات</span></a>
     <a href="{{ route('transactions.index') }}"><i class="fas fa-file-alt"></i> <span>الشهادات</span></a>
-        <a href="{{ route('admin.users.index') }}"><i class="fas fa-users-cog"></i> <span>إدارة المستخدمين</span></a>
+    <a href="{{ route('user.index') }}"><i class="fas fa-users-cog"></i> <span>إدارة المستخدمين</span></a>
 
+    <form action="{{ route('logout') }}" method="POST" style="margin-top:15px;">
+        @csrf
+        <button type="submit" class="btn btn-danger w-100">
+            <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+        </button>
+    </form>
 </div>
 
 <div class="content container">
