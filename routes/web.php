@@ -16,8 +16,18 @@ use App\Http\Controllers\Admin\UserController;
 */
 
 // الصفحة الرئيسية
+// الصفحة الرئيسية
 Route::get('/', function () {
-    return view('layout'); 
+    return auth()->check() 
+        ? redirect()->route('dashboard') 
+        : redirect()->route('login');
+});
+
+// صفحات محمية للمستخدمين المسجلين فقط
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', function () {
+        return view('layout'); // هنا بيعرض الواجهة الرئيسية بعد تسجيل الدخول
+    })->name('dashboard');
 });
 
 // Auth Routes
@@ -27,17 +37,10 @@ Route::get('register', [AuthController::class, 'showRegister'])->name('register'
 Route::post('register', [AuthController::class, 'register']);
 Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
-// صفحات محمية للمستخدمين المسجلين فقط
-Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('layout');
-    })->name('dashboard');
-});
-
 // Admin Routes
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::resource('users', UserController::class)->names([
-        'index' => 'user.index',
+        'index' => 'admin.users.index',
         'create' => 'admin.users.create',
         'store' => 'admin.users.store',
         'edit' => 'admin.users.edit',
@@ -45,7 +48,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
         'destroy' => 'admin.users.destroy',
     ]);
 });
-
 /*
 |--------------------------------------------------------------------------
 | Routes for Placemark Certificate System
@@ -76,48 +78,96 @@ Route::get('/manual/tracking', [ManualController::class, 'trackingForm'])->name(
 */
 Route::middleware(['auth'])->group(function () {
 
-    // 🟡 Customer Service: إضافة معاملات
+    // Customer Service فقط
     Route::middleware('role:customer_service')->group(function () {
-        Route::get('/tracking-certificates/create', [TrackingCertificateController::class, 'create'])->name('tracking_certificates.create'); // Customer Service
-        Route::post('/tracking-certificates/save-image', [TrackingCertificateController::class, 'saveImage'])->name('tracking_certificates.save_image'); // Customer Service
-        Route::post('/tracking-certificates/store-from-existing', [TrackingCertificateController::class, 'storeFromExisting'])->name('tracking_certificates.storeFromExisting'); // Customer Service
+        Route::get('/tracking-certificates/delivery/{status}', [TrackingCertificateController::class, 'deliveryByStatus'])
+            ->name('tracking_certificates.delivery');
     });
 
-    // 🔵 Reviewer: المراجعة فقط
-    Route::middleware('role:reviewer')->group(function () {
-        Route::get('/tracking-certificates/review/{status}', [TrackingCertificateController::class, 'reviewByStatus'])->name('tracking_certificates.review'); // Reviewer
-        Route::get('/tracking/review', [TrackingCertificateController::class, 'reviewByStatus'])->name('tracking.review'); // Reviewer
-        Route::post('/tracking-certificates/store', [TrackingCertificateController::class, 'store'])->name('tracking_certificates.store'); // Reviewer
-        Route::post('/tracking-certificates/save-temp-image', [TrackingCertificateController::class, 'saveTemporaryImage'])->name('tracking_certificates.save_temp_image'); // Reviewer
-        Route::get('/tracking-certificates/create_from_existing/{id}', [TrackingCertificateController::class, 'createFromExisting'])->name('tracking_certificates.create_from_existing'); // Reviewer
-    });
-
-    // 🟣 Data Entry + Reviewer: الإدخال والمراجعة
+    // Routes مشتركة بين Customer Service و Data Entry و Reviewer
     Route::middleware('role:data_entry,reviewer')->group(function () {
-        Route::get('/tracking-certificates/delivery/{status}', [TrackingCertificateController::class, 'deliveryByStatus'])->name('tracking_certificates.delivery'); // Data Entry, Reviewer
-        Route::get('/tracking-certificates/stifaa', [TrackingCertificateController::class, 'stifaa'])->name('tracking_certificates.stifaa'); // Data Entry, Reviewer
-        Route::get('/tracking/delivery', [TrackingCertificateController::class, 'deliveryByStatus'])->name('tracking.delivery'); // Data Entry, Reviewer
-        Route::get('/tracking/stifaa', [TrackingCertificateController::class, 'stifaa'])->name('tracking.stifaa'); // Data Entry, Reviewer
-        Route::get('/manual', [ManualController::class, 'chooseType'])->name('manual.choose'); // Data Entry, Reviewer
+        Route::get('/tracking-certificates/stifaa', [TrackingCertificateController::class, 'stifaa'])
+            ->name('tracking_certificates.stifaa');
+
+        Route::post('/tracking-certificates/store', [TrackingCertificateController::class, 'store'])
+            ->name('tracking_certificates.store');
+
+        Route::post('/tracking-certificates/save-temp-image', [TrackingCertificateController::class, 'saveTemporaryImage'])
+            ->name('tracking_certificates.save_temp_image');
+
+        Route::get('/tracking-certificates/create_from_existing/{id}', [TrackingCertificateController::class, 'createFromExisting'])
+            ->name('tracking_certificates.create_from_existing');
+
+        Route::get('/tracking-certificates/create_from_existing/{id}', [TrackingCertificateController::class, 'createFromExisting'])
+            ->name('tracking_certificates.create_from_existing');
+
+        Route::get('/tracking-certificates/{id}/edit', [TrackingCertificateController::class, 'edit'])
+            ->name('tracking_certificates.edit');
+
+        Route::put('/tracking-certificates/{id}/update', [TrackingCertificateController::class, 'update'])
+            ->name('tracking_certificates.update');
+
+        Route::post('/tracking-certificates/preview', [TrackingCertificateController::class, 'previewForm'])
+            ->name('manual.preview');
+
+        Route::get('/tracking-certificates/{id}/images', [TrackingCertificateController::class, 'showCertificateImages'])
+            ->name('certificates.showImages');
+
+        Route::get('/tracking/delivery', [TrackingCertificateController::class, 'deliveryByStatus'])
+            ->name('tracking.delivery');
+
+        Route::get('/tracking/stifaa', [TrackingCertificateController::class, 'stifaa'])
+            ->name('tracking.stifaa');
+
+            
+        Route::post('/tracking-certificates/store-from-existing', [TrackingCertificateController::class, 'storeFromExisting'])
+            ->name('tracking_certificates.storeFromExisting');
     });
 
-    // 🌍 Routes مشتركة لكل الأدوار (Admin يشوفهم تلقائيًا)
-    Route::get('/tracking-certificates/{id}/edit', [TrackingCertificateController::class, 'edit'])->name('tracking_certificates.edit'); // كل الأدوار
-    Route::put('/tracking-certificates/{id}/update', [TrackingCertificateController::class, 'update'])->name('tracking_certificates.update'); // كل الأدوار
-    Route::post('/tracking-certificates/preview', [TrackingCertificateController::class, 'previewForm'])->name('manual.preview'); // كل الأدوار
-    Route::get('/tracking-certificates/{id}/images', [TrackingCertificateController::class, 'showCertificateImages'])->name('certificates.showImages'); // كل الأدوار
-    Route::post('/search', [TrackingCertificateController::class, 'searchByTransactionNumber'])->name('certificates.search'); // كل الأدوار
-    Route::get('/search', [TrackingCertificateController::class, 'showSearchForm'])->name('certificates.search.form'); // كل الأدوار
+    // Reviewer فقط
+    Route::middleware('role:reviewer')->group(function () {
+        Route::get('/tracking-certificates/review/{status}', [TrackingCertificateController::class, 'reviewByStatus'])
+            ->name('tracking_certificates.review');
 
-    // 🟢 Admin فقط: راوتات خاصة بالادمن
+        Route::get('/tracking/review', [TrackingCertificateController::class, 'reviewByStatus'])
+            ->name('tracking.review');
+
+        Route::delete('/tracking-certificates/{id}/images/delete', [TrackingCertificateController::class, 'deleteCertificateImage'])
+            ->name('certificates.deleteImage');
+    });
+
+    // Routes مشتركة لكل الأدوار
+    Route::post('/search', [TrackingCertificateController::class, 'searchByTransactionNumber'])
+        ->name('certificates.search');
+
+    Route::get('/search', [TrackingCertificateController::class, 'showSearchForm'])
+        ->name('certificates.search.form');
+
+    Route::post('/tracking-certificates/{id}/update-status', [TrackingCertificateController::class, 'updateStatus'])
+        ->name('tracking_certificates.update_status');
+
+    Route::get('/manual', [ManualController::class, 'chooseType'])
+        ->name('manual.choose');
+
+    Route::match(['get', 'post'], '/transactions/search', [TransactionController::class, 'search'])
+        ->name('transactions.search');
+
+    // Admin فقط
     Route::middleware('role:admin')->group(function () {
-        Route::get('/tracking-certificates/all', [TrackingCertificateController::class, 'all'])->name('tracking_certificates.all'); // Admin
-        Route::delete('/tracking-certificates/{id}/images/delete', [TrackingCertificateController::class, 'deleteCertificateImage'])->name('certificates.deleteImage'); // Admin
-        Route::post('/tracking-certificates/{id}/update-status', [TrackingCertificateController::class, 'updateStatus'])->name('tracking_certificates.update_status'); // Admin
-        Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index'); // Admin
-        Route::post('/transactions/{id}/deliver', [TransactionController::class, 'deliver'])->name('transactions.deliver'); // Admin
-        Route::match(['get', 'post'], '/transactions/search', [TransactionController::class, 'search'])->name('transactions.search'); // Admin
+        Route::get('/tracking-certificates/all', [TrackingCertificateController::class, 'all'])
+            ->name('tracking_certificates.all');
+
+        Route::get('/transactions', [TransactionController::class, 'index'])
+            ->name('transactions.index');
+
+        Route::post('/transactions/{id}/deliver', [TransactionController::class, 'deliver'])
+            ->name('transactions.deliver');
+
+        Route::get('/tracking-certificates/create', [TrackingCertificateController::class, 'create'])
+            ->name('tracking_certificates.create');
+
     });
+
 });
 
 /*

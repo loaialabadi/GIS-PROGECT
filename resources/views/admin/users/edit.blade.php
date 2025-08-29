@@ -27,10 +27,11 @@
         <select name="role" class="form-control" required>
             <option value="admin" {{ $user->role=='admin'?'selected':'' }}>Admin</option>
             <option value="reviewer" {{ $user->role=='reviewer'?'selected':'' }}>مراجع</option>
-            <option value="delivery" {{ $user->role=='delivery'?'selected':'' }}>تسليم</option>
-            <option value="user" {{ $user->role=='user'?'selected':'' }}>مستخدم عادي</option>
+            <option value="customer_service" {{ $user->role=='customer_service'?'selected':'' }}>خدمه عملاء</option>
+            <option value="data_entry" {{ $user->role=='data_entry'?'selected':'' }}>إدخال بيانات</option>
         </select>
     </div>
     <button type="submit" class="btn btn-success">تحديث</button>
 </form>
 @endsection
+

@@ -13,7 +13,7 @@ class UserController extends Controller
     public function index()
     {
         $users = User::all();
-        return view('user.index', compact('users'));
+        return view('admin.users.index', compact('users'));
     }
 
     // ✅ عرض صفحة إنشاء مستخدم جديد
@@ -39,13 +39,13 @@ class UserController extends Controller
             'role'     => $request->role,
         ]);
 
-        return redirect()->route('user.index')->with('success', 'تم إضافة المستخدم بنجاح');
+        return redirect()->route('admin.users.index')->with('success', 'تم إضافة المستخدم بنجاح');
     }
 
     // ✅ عرض صفحة التعديل
     public function edit(User $user)
     {
-        return view('user.edit', compact('user'));
+        return view('admin.users.edit', compact('user'));
     }
 
     // ✅ تحديث بيانات المستخدم
@@ -66,7 +66,7 @@ class UserController extends Controller
                             : $user->password,
         ]);
 
-        return redirect()->route('user.index')->with('success', 'تم تحديث بيانات المستخدم');
+        return redirect()->route('admin.users.index')->with('success', 'تم تحديث بيانات المستخدم');
     }
 
     // ✅ حذف مستخدم
