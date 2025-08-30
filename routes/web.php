@@ -16,19 +16,17 @@ use App\Http\Controllers\Admin\UserController;
 */
 
 // الصفحة الرئيسية
-// الصفحة الرئيسية
+
 Route::get('/', function () {
     return auth()->check() 
         ? redirect()->route('dashboard') 
         : redirect()->route('login');
 });
 
-// صفحات محمية للمستخدمين المسجلين فقط
-Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('layout'); // هنا بيعرض الواجهة الرئيسية بعد تسجيل الدخول
-    })->name('dashboard');
-});
+// Routes for Dashboard
+Route::middleware(['auth'])->get('/dashboard', function () {
+    return view('layout'); // عرض الواجهة الرئيسية بعد تسجيل الدخول
+})->name('dashboard');
 
 // Auth Routes
 Route::get('login', [AuthController::class, 'showLogin'])->name('login');

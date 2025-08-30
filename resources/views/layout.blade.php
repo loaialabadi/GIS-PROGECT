@@ -76,13 +76,6 @@
       @yield('content')
 
 
-          <div>اسم الراوت الحالي: 
-        <strong>{{ Route::currentRouteName() ?? 'بدون اسم' }}</strong>
-    </div>
-    <div>الرابط الحالي: 
-        <strong>{{ url()->current() }}</strong>
-    </div>
-  </div>
 
   {{-- JS --}}
   <script>
