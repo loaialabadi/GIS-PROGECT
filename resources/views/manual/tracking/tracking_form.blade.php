@@ -63,20 +63,23 @@
             @enderror
         </div>
 
-        <div class="mb-3">
-            <label for="center_name" class="form-label">اسم المركز</label>
-            <select id="center_name" name="center_name" class="form-control">
-                <option value="">-- اختر المركز --</option>
-                <option value="مركز قنا" {{ old('center_name') == 'مركز قنا' ? 'selected' : '' }}>مركز قنا</option>
-                <option value="مركز دشنا" {{ old('center_name') == 'مركز دشنا' ? 'selected' : '' }}>مركز دشنا</option>
-                <option value="مركز نجع حمادي" {{ old('center_name') == 'مركز نجع حمادي' ? 'selected' : '' }}>مركز نجع حمادي</option>
-                <option value="مركز قوص" {{ old('center_name') == 'مركز قوص' ? 'selected' : '' }}>مركز قوص</option>
-                <option value="مركز نقادة" {{ old('center_name') == 'مركز نقادة' ? 'selected' : '' }}>مركز نقادة</option>
-            </select>
-            @error('center_name')
-                <small class="text-danger">{{ $message }}</small>
-            @enderror
-        </div>
+<div class="mb-3">
+    <label for="center_name" class="form-label">اسم المركز</label>
+    <select id="center_name" name="center_name" class="form-control">
+        <option value="">-- اختر المركز --</option>
+        <option value="مركز قنا" {{ old('center_name') == 'مركز قنا' ? 'selected' : '' }}>مركز قنا</option>
+        <option value="مركز دشنا" {{ old('center_name') == 'مركز دشنا' ? 'selected' : '' }}>مركز دشنا</option>
+        <option value="مركز نجع حمادي" {{ old('center_name') == 'مركز نجع حمادي' ? 'selected' : '' }}>مركز نجع حمادي</option>
+        <option value="مركز قوص" {{ old('center_name') == 'مركز قوص' ? 'selected' : '' }}>مركز قوص</option>
+        <option value="مركز نقادة" {{ old('center_name') == 'مركز نقادة' ? 'selected' : '' }}>مركز نقادة</option>
+        <option value="مركز الوقف" {{ old('center_name') == 'مركز الوقف' ? 'selected' : '' }}>مركز الوقف</option>
+        <option value="مركز فرشوط" {{ old('center_name') == 'مركز فرشوط' ? 'selected' : '' }}>مركز فرشوط</option>
+        <option value="مركز قفط" {{ old('center_name') == 'مركز قفط' ? 'selected' : '' }}>مركز قفط</option>
+    </select>
+    @error('center_name')
+        <small class="text-danger">{{ $message }}</small>
+    @enderror
+</div>
 
         <div class="mb-3">
             <label for="area" class="form-label">المنطقة</label>
@@ -100,6 +103,7 @@
                 <option value="محمد عبدالخالق" {{ old('inspector_name') == 'محمد عبدالخالق' ? 'selected' : '' }}>محمد عبدالخالق</option>
                 <option value="مصطفي مهران" {{ old('inspector_name') == 'مصطفي مهران' ? 'selected' : '' }}>مصطفي مهران</option>
                 <option value="محمد عبدالحميد" {{ old('inspector_name') == 'محمد عبدالحميد' ? 'selected' : '' }}>محمد عبدالحميد</option>
+                <option value="محمد هلال" {{ old('inspector_name') == 'محمد هلال' ? 'selected' : '' }}>محمد هلال</option>
             </select>
         </div>
 

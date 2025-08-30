@@ -19,7 +19,7 @@ class UserController extends Controller
     // ✅ عرض صفحة إنشاء مستخدم جديد
     public function create()
     {
-        return view('user.create');
+        return view('admin.users.create');
     }
 
     // ✅ حفظ المستخدم الجديد
@@ -75,4 +75,16 @@ class UserController extends Controller
         $user->delete();
         return redirect()->route('admin.users.index')->with('success', 'تم حذف المستخدم');
     }
+
+
+
+    public function toggleStatus(User $user)
+{
+    $user->is_active = $user->is_active ? 0 : 1; // لو 1 يخليها 0 ولو 0 يخليها 1
+    $user->save();
+
+    return redirect()->route('admin.users.index')
+        ->with('success', 'تم تحديث حالة المستخدم بنجاح');
+}
+
 }

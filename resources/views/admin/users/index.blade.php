@@ -19,10 +19,26 @@
             <td>{{ $user->name }}</td>
             <td>{{ $user->email }}</td>
             <td>{{ $user->role }}</td>
-            <td>
-                <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-sm btn-warning">تعديل</a>
+<td>
+    <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-sm btn-warning">تعديل</a>
+    
+    <form action="{{ route('admin.users.destroy', $user) }}" method="POST" style="display:inline;">
+        @csrf
+        @method('DELETE')
+        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('هل أنت متأكد؟')">حذف</button>
+    </form>
 
-            </td>
+    <form action="{{ route('admin.users.toggle', $user) }}" method="POST" style="display:inline;">
+        @csrf
+        @method('PATCH')
+        @if($user->is_active)
+            <button type="submit" class="btn btn-sm btn-secondary">تعطيل</button>
+        @else
+            <button type="submit" class="btn btn-sm btn-success">تنشيط</button>
+        @endif
+    </form>
+</td>
+
         </tr>
         @endforeach
     </tbody>

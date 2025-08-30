@@ -2,15 +2,78 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>تسجيل الدخول</title>
+    <title>تسجيل الدخول - مركز معلومات شبكات المرافق</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0d6efd, #198754);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: "Tajawal", sans-serif;
+        }
+        .login-card {
+            max-width: 420px;
+            width: 100%;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+        .login-header {
+            background: linear-gradient(135deg, #0d6efd, #198754);
+            padding: 30px 20px;
+            text-align: center;
+            color: #fff;
+        }
+        .login-header h3 {
+            margin: 10px 0 0;
+            font-weight: bold;
+        }
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: #fff;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto;
+            font-weight: bold;
+            font-size: 22px;
+            color: #0d6efd;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .btn-custom {
+            background: linear-gradient(135deg, #0d6efd, #198754);
+            border: none;
+        }
+        .btn-custom:hover {
+            background: linear-gradient(135deg, #198754, #0d6efd);
+        }
+        small.credit {
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+            color: #666;
+            font-size: 13px;
+        }
+    </style>
 </head>
-<body class="bg-light">
+<body>
 
-<div class="container mt-5" style="max-width:400px">
-    <div class="card shadow p-4 rounded">
-        <h2 class="mb-4 text-center">تسجيل الدخول</h2>
+<div class="login-card">
+     
+    <div class="login-header">
+        <div class="logo">
+            <img src="{{ asset('images/logo1.png') }}" alt="Logo" class="img-fluid" style="max-width:70px;">
+        </div>
+        <h3>مركز معلومات شبكات المرافق</h3>
+    </div>
 
+    <!-- نموذج تسجيل الدخول -->
+    <div class="p-4">
         {{-- عرض رسائل --}}
         @if(session('error'))
             <div class="alert alert-danger text-center">{{ session('error') }}</div>
@@ -37,13 +100,10 @@
                 @enderror
             </div>
 
-            <button type="submit" class="btn btn-primary w-100">تسجيل الدخول</button>
+            <button type="submit" class="btn btn-custom text-white w-100">تسجيل الدخول</button>
         </form>
 
-        <p class="mt-3 text-center">
-            ليس لديك حساب؟ 
-            <a href="{{ route('register') }}">سجل هنا</a>
-        </p>
+        <small class="credit">إعداد: م. لؤي حمدون</small>
     </div>
 </div>
 

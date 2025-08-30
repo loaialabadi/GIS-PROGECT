@@ -25,9 +25,9 @@
         <label>الدور</label>
         <select name="role" class="form-control" required>
             <option value="admin">Admin</option>
-            <option value="reviewer">مراجع</option>
-            <option value="delivery">تسليم</option>
-            <option value="user">مستخدم عادي</option>
+            <option value="reviewer">مراجع gis</option>
+            <option value="customer_service">خدمه عملاء</option>
+            <option value="data_entry">مدخل بيانات</option>
         </select>
     </div>
     <button type="submit" class="btn btn-success">حفظ</button>

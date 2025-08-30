@@ -17,19 +17,28 @@ class AuthController extends Controller
     }
 
     // ✅ تسجيل الدخول
-    public function login(Request $request)
-    {
-        $credentials = $request->only('email', 'password');
+public function login(Request $request)
+{
+    $credentials = $request->only('email', 'password');
 
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-            return redirect()->intended('dashboard'); // يروح على الداشبورد
-        }
+    // نجرب نجيب المستخدم الأول
+    $user = User::where('email', $credentials['email'])->first();
 
+    if ($user && !$user->is_active) {
         return back()->withErrors([
-            'email' => 'بيانات الدخول غير صحيحة.',
+            'email' => 'تم تعطيل حسابك، يرجى التواصل مع الإدارة.',
         ]);
     }
+
+    if (Auth::attempt($credentials)) {
+        $request->session()->regenerate();
+        return redirect()->intended('dashboard');
+    }
+
+    return back()->withErrors([
+        'email' => 'بيانات الدخول غير صحيحة.',
+    ]);
+}
 
     // ✅ عرض صفحة التسجيل
     public function showRegister()

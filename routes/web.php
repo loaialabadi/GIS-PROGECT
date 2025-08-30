@@ -48,6 +48,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
         'destroy' => 'admin.users.destroy',
     ]);
 });
+
+Route::patch('/admin/users/{user}/toggle', [UserController::class, 'toggleStatus'])
+    ->name('admin.users.toggle');
+
 /*
 |--------------------------------------------------------------------------
 | Routes for Placemark Certificate System
