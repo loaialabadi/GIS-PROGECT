@@ -38,27 +38,54 @@
       </div>
   </div>
 
-  {{-- 🔹 Sidebar --}}
-  <div class="sidebar" id="sidebar">
-      <h4 class="px-3 py-2">القائمة</h4>
-      <a href="{{ route('placemarks.upload') }}"><i class="fas fa-home"></i> <span>ادخال اكسيل</span></a>
-      <a href="{{ route('manual.choose') }}"><i class="fas fa-pen"></i> <span>ادخال يدوي</span></a>
-      <a href="{{ route('certificates.search.form') }}"><i class="fas fa-list"></i> <span>بحث</span></a>
-      <a href="{{ route('tracking_certificates.review', ['status' => 'pending']) }}"><i class="fas fa-eye"></i> <span>مراجعة الشهادات</span></a>
-      <a href="{{ route('tracking_certificates.delivery', ['status' => 'delivered']) }}"><i class="fas fa-truck"></i> <span>خدمة العملاء للتسليم</span></a>
-      <a href="{{ route('tracking_certificates.stifaa') }}"><i class="fas fa-check"></i> <span>استيفاء الشهادات</span></a>
-      <a href="{{ route('transactions.index') }}"><i class="fas fa-file-alt"></i> <span>الشهادات</span></a>
-      <a href="{{ route('admin.users.index') }}"><i class="fas fa-users-cog"></i> <span>إدارة المستخدمين</span></a>
+{{-- 🔹 Sidebar --}}
+<div class="sidebar bg-dark text-white vh-100 shadow-lg" id="sidebar" style="width: 250px;">
+    <div class="text-center py-4 border-bottom">
+        <h4 class="fw-bold">📌 القائمة</h4>
+    </div>
 
-      <form action="{{ route('logout') }}" method="POST" class="p-3">
-          @csrf
-          <button type="submit" class="btn btn-danger w-100">
-              <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
-          </button>
-      </form>
+    <div class="list-group list-group-flush">
+        <a href="{{ route('placemarks.upload') }}" class="list-group-item list-group-item-action bg-info text-dark d-flex align-items-center">
+            <i class="fas fa-home me-2"></i> <span>ادخال اكسيل</span>
+        </a>
+        <a href="{{ route('manual.choose') }}" class="list-group-item list-group-item-action bg-info text-dark d-flex align-items-center">
+            <i class="fas fa-pen me-2"></i> <span>ادخال يدوي</span>
+        </a>
+        <a href="{{ route('certificates.search.form') }}" class="list-group-item list-group-item-action bg-info text-dark d-flex align-items-center">
+            <i class="fas fa-list me-2"></i> <span>بحث</span>
+        </a>
+        <a href="{{ route('tracking_certificates.review', ['status' => 'pending']) }}" class="list-group-item list-group-item-action bg-info text-dark d-flex align-items-center">
+            <i class="fas fa-eye me-2"></i> <span>مراجعة الشهادات</span>
+        </a>
+        <a href="{{ route('tracking_certificates.delivery', ['status' => 'delivered']) }}" class="list-group-item list-group-item-action bg-info text-dark d-flex align-items-center">
+            <i class="fas fa-truck me-2"></i> <span>خدمة العملاء للتسليم</span>
+        </a>
+        <a href="{{ route('tracking_certificates.stifaa') }}" class="list-group-item list-group-item-action bg-info text-dark d-flex align-items-center">
+            <i class="fas fa-check me-2"></i> <span>استيفاء الشهادات</span>
+        </a>
+        <a href="{{ route('transactions.index') }}" class="list-group-item list-group-item-action bg-info text-dark d-flex align-items-center">
+            <i class="fas fa-file-alt me-2"></i> <span>الشهادات</span>
+        </a>
+        <a href="{{ route('reports.index') }}" class="list-group-item list-group-item-action bg-info text-dark d-flex align-items-center">
+            <i class="fas fa-chart-bar me-2"></i> <span>تقارير الشهادات</span>
+        </a>
+        <a href="{{ route('employees.index') }}" class="list-group-item list-group-item-action bg-info text-dark d-flex align-items-center">
+            <i class="fas fa-user-tie me-2"></i> <span>إدارة الموظفين</span>
+        </a>
+        <a href="{{ route('admin.users.index') }}" class="list-group-item list-group-item-action bg-info text-dark d-flex align-items-center">
+            <i class="fas fa-users-cog me-2"></i> <span>إدارة المستخدمين</span>
+        </a>
+    </div>
 
-      
-  </div>
+    <div class="mt-auto p-3 border-top">
+        <form action="{{ route('logout') }}" method="POST">
+            @csrf
+            <button type="submit" class="btn btn-danger w-100 d-flex align-items-center justify-content-center">
+                <i class="fas fa-sign-out-alt me-2"></i> تسجيل الخروج
+            </button>
+        </form>
+    </div>
+</div>
 
   {{-- 🔹 Main Content --}}
   <div class="content container py-4">

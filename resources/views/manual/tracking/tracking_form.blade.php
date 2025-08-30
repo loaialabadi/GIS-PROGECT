@@ -93,19 +93,18 @@
             <textarea id="notes" name="notes" class="form-control">{{ old('notes') }}</textarea>
         </div>
 
-        <div class="mb-3">
-            <label for="inspector_name" class="form-label">اسم القائم بالمتابعة</label>
-            <select id="inspector_name" name="inspector_name" class="form-control">
-                <option value="">اختر الاسم</option>
-                <option value="سيد عبيد" {{ old('inspector_name') == 'سيد عبيد' ? 'selected' : '' }}>سيد عبيد</option>
-                <option value="الحسيني سعيد" {{ old('inspector_name') == 'الحسيني سعيد' ? 'selected' : '' }}>الحسيني سعيد</option>
-                <option value="احمد عبدالرحمن" {{ old('inspector_name') == 'احمد عبدالرحمن' ? 'selected' : '' }}>احمد عبدالرحمن</option>
-                <option value="محمد عبدالخالق" {{ old('inspector_name') == 'محمد عبدالخالق' ? 'selected' : '' }}>محمد عبدالخالق</option>
-                <option value="مصطفي مهران" {{ old('inspector_name') == 'مصطفي مهران' ? 'selected' : '' }}>مصطفي مهران</option>
-                <option value="محمد عبدالحميد" {{ old('inspector_name') == 'محمد عبدالحميد' ? 'selected' : '' }}>محمد عبدالحميد</option>
-                <option value="محمد هلال" {{ old('inspector_name') == 'محمد هلال' ? 'selected' : '' }}>محمد هلال</option>
-            </select>
-        </div>
+<div class="mb-3">
+    <label for="inspector_name" class="form-label">اسم القائم بالمتابعة</label>
+    <select id="inspector_name" name="inspector_name" class="form-control">
+        <option value="">اختر الاسم</option>
+        @foreach(\App\Models\Employee::where('role','inspector')->get() as $emp)
+            <option value="{{ $emp->name }}" {{ old('inspector_name') == $emp->name ? 'selected' : '' }}>
+                {{ $emp->name }}
+            </option>
+        @endforeach
+    </select>
+</div>
+
 
         <!-- حقول حالة التتبع 5 -->
 @php
@@ -165,18 +164,31 @@
 
 
         <!-- بيانات GIS -->
-        <h5>بيانات GIS</h5>
+<h5>بيانات GIS</h5>
 
-        <div class="mb-3">
-            <label for="gis_preparer_name" class="form-label">اسم مسؤول GIS اعداد</label>
-            <input type="text" id="gis_preparer_name" name="gis_preparer_name" class="form-control" value="{{ old('gis_preparer_name') }}">
-        </div>
+<div class="mb-3">
+    <label for="gis_preparer_name" class="form-label">اسم مسؤول GIS إعداد</label>
+    <select id="gis_preparer_name" name="gis_preparer_name" class="form-control">
+        <option value="">اختر الموظف</option>
+        @foreach(\App\Models\Employee::where('role','gis_preparer')->get() as $emp)
+            <option value="{{ $emp->name }}" {{ old('gis_preparer_name') == $emp->name ? 'selected' : '' }}>
+                {{ $emp->name }}
+            </option>
+        @endforeach
+    </select>
+</div>
 
-        <div class="mb-3">
-            <label for="gis_reviewer_name" class="form-label">اسم مسؤول GIS مراجعة</label>
-            <input type="text" id="gis_reviewer_name" name="gis_reviewer_name" class="form-control" value="{{ old('gis_reviewer_name') }}">
-        </div>
-  
+<div class="mb-3">
+    <label for="gis_reviewer_name" class="form-label">اسم مسؤول GIS مراجعة</label>
+    <select id="gis_reviewer_name" name="gis_reviewer_name" class="form-control">
+        <option value="">اختر الموظف</option>
+        @foreach(\App\Models\Employee::where('role','gis_reviewer')->get() as $emp)
+            <option value="{{ $emp->name }}" {{ old('gis_reviewer_name') == $emp->name ? 'selected' : '' }}>
+                {{ $emp->name }}
+            </option>
+        @endforeach
+    </select>
+</div>
 
         <!-- زر جديد للمعاينة -->
         <button type="submit" name="action" value="preview" class="btn btn-secondary"  onclick="saveCertificateTemp()">👁️ معاينة الشهادة</button>

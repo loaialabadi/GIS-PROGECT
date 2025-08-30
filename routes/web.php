@@ -8,6 +8,8 @@ use App\Http\Controllers\CertificateSearchController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\EmployeeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -168,6 +170,13 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/tracking-certificates/create', [TrackingCertificateController::class, 'create'])
             ->name('tracking_certificates.create');
 
+
+            Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+Route::get('/reports/export', [ReportController::class, 'export'])->name('reports.export');
+Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+Route::get('/reports/export', [ReportController::class, 'export'])->name('reports.export');
+
+Route::resource('employees', EmployeeController::class);
     });
 
 });
