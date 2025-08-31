@@ -86,15 +86,18 @@
             <textarea id="notes" name="notes" class="form-control">{{ old('notes', $certificate->notes) }}</textarea>
         </div>
 
-        <div class="mb-3">
-            <label for="inspector_name" class="form-label">اسم القائم بالمتابعة</label>
-            <select id="inspector_name" name="inspector_name" class="form-control">
-                <option value="">اختر الاسم</option>
-                @foreach(['سيد عبيد','الحسيني سعيد','احمد عبدالرحمن','محمد عبدالخالق','مصطفي مهران','محمد عبدالحميد'] as $inspector)
-                    <option value="{{ $inspector }}" {{ old('inspector_name', $certificate->inspector_name) == $inspector ? 'selected' : '' }}>{{ $inspector }}</option>
-                @endforeach
-            </select>
-        </div>
+
+<div class="mb-3">
+    <label for="inspector_name" class="form-label">اسم القائم بالمتابعة</label>
+    <select id="inspector_name" name="inspector_name" class="form-control">
+        <option value="">اختر الاسم</option>
+        @foreach(\App\Models\Employee::where('role','inspector')->get() as $emp)
+            <option value="{{ $emp->name }}" {{ old('inspector_name') == $emp->name ? 'selected' : '' }}>
+                {{ $emp->name }}
+            </option>
+        @endforeach
+    </select>
+</div>
 
 <h5>تعدي وصف المتابعة لكل تاريخ موجود:</h5>
 @php
@@ -120,22 +123,31 @@
 @endif
 
 
-        {{-- بيانات GIS --}}
-        <h5>بيانات GIS</h5> 
-        <div class="mb-3">
-            <label for="gis_preparer_name" class="form-label">اسم مسؤول GIS اعداد</label>
-            <input type="text" id="gis_preparer_name" name="gis_preparer_name" class="form-control" 
-                value="{{ old('gis_preparer_name', $certificate->gis_preparer_name) }}">
-            @error('gis_preparer_name')<small class="text-danger">{{ $message }}</small>@enderror
-        </div>
+<h5>بيانات GIS</h5>
 
+<div class="mb-3">
+    <label for="gis_preparer_name" class="form-label">اسم مسؤول GIS إعداد</label>
+    <select id="gis_preparer_name" name="gis_preparer_name" class="form-control">
+        <option value="">اختر الموظف</option>
+        @foreach(\App\Models\Employee::where('role','gis_preparer')->get() as $emp)
+            <option value="{{ $emp->name }}" {{ old('gis_preparer_name') == $emp->name ? 'selected' : '' }}>
+                {{ $emp->name }}
+            </option>
+        @endforeach
+    </select>
+</div>
 
-        <div class="mb-3">
-            <label for="gis_reviewer_name" class="form-label">اسم مسؤول GIS مراجعة</label>
-            <input type="text" id="gis_reviewer_name" name="gis_reviewer_name" class="form-control" 
-                value="{{ old('gis_reviewer_name', $certificate->gis_reviewer_name) }}">
-            @error('gis_reviewer_name')<small class="text-danger">{{ $message }}</small>@enderror
-        </div>
+<div class="mb-3">
+    <label for="gis_reviewer_name" class="form-label">اسم مسؤول GIS مراجعة</label>
+    <select id="gis_reviewer_name" name="gis_reviewer_name" class="form-control">
+        <option value="">اختر الموظف</option>
+        @foreach(\App\Models\Employee::where('role','gis_reviewer')->get() as $emp)
+            <option value="{{ $emp->name }}" {{ old('gis_reviewer_name') == $emp->name ? 'selected' : '' }}>
+                {{ $emp->name }}
+            </option>
+        @endforeach
+    </select>
+</div>
 
         
 <a href="{{ route('tracking_certificates.create_from_existing', $certificate->id) }}" 

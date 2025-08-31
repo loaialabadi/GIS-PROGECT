@@ -19,7 +19,7 @@
     {{-- عرض النتائج --}}
     @if(isset($results) && $results->count() > 0)
         <div class="table-responsive">
-            <table class="table table-bordered table-striped text-center align-middle">
+            <table class="table table-bordered table-hover text-center align-middle">
                 <thead class="table-light">
                     <tr>
                         <th>#</th>

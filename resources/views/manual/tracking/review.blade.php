@@ -14,7 +14,7 @@
     </form>
 
     @if(count($certificates) > 0)
-        <table class="table table-bordered text-center align-middle">
+        <table class="table table-bordered table-hover text-center align-middle">
             <thead class="table-light">
                 <tr>
                     <th>#</th>

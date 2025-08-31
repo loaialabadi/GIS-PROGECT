@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
 // إنشاء أول مستخدم أدمن
 User::create([
     'name' => 'Super Admin',
-    'email' => 'admin@example.com',
+    'email' => 'loia@gmail.com',
     'password' => Hash::make('123456'), // غيّرها لكلمة قوية
     'role' => 'admin',
 ]);

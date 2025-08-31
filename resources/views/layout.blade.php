@@ -39,43 +39,52 @@
   </div>
 
 {{-- 🔹 Sidebar --}}
-<div class="sidebar bg-dark text-white vh-100 shadow-lg" id="sidebar" style="width: 250px;">
+<div class="sidebar vh-100 shadow-lg" id="sidebar" style="width: 250px;">
     <div class="text-center py-4 border-bottom">
-        <h4 class="fw-bold">📌 القائمة</h4>
+        <h4 class="fw-bold"> القائمة</h4>
     </div>
 
-    <div class="list-group list-group-flush">
-        <a href="{{ route('placemarks.upload') }}" class="list-group-item list-group-item-action bg-info text-dark d-flex align-items-center">
-            <i class="fas fa-home me-2"></i> <span>ادخال اكسيل</span>
-        </a>
-        <a href="{{ route('manual.choose') }}" class="list-group-item list-group-item-action bg-info text-dark d-flex align-items-center">
-            <i class="fas fa-pen me-2"></i> <span>ادخال يدوي</span>
-        </a>
-        <a href="{{ route('certificates.search.form') }}" class="list-group-item list-group-item-action bg-info text-dark d-flex align-items-center">
-            <i class="fas fa-list me-2"></i> <span>بحث</span>
-        </a>
-        <a href="{{ route('tracking_certificates.review', ['status' => 'pending']) }}" class="list-group-item list-group-item-action bg-info text-dark d-flex align-items-center">
-            <i class="fas fa-eye me-2"></i> <span>مراجعة الشهادات</span>
-        </a>
-        <a href="{{ route('tracking_certificates.delivery', ['status' => 'delivered']) }}" class="list-group-item list-group-item-action bg-info text-dark d-flex align-items-center">
-            <i class="fas fa-truck me-2"></i> <span>خدمة العملاء للتسليم</span>
-        </a>
-        <a href="{{ route('tracking_certificates.stifaa') }}" class="list-group-item list-group-item-action bg-info text-dark d-flex align-items-center">
-            <i class="fas fa-check me-2"></i> <span>استيفاء الشهادات</span>
-        </a>
-        <a href="{{ route('transactions.index') }}" class="list-group-item list-group-item-action bg-info text-dark d-flex align-items-center">
-            <i class="fas fa-file-alt me-2"></i> <span>الشهادات</span>
-        </a>
-        <a href="{{ route('reports.index') }}" class="list-group-item list-group-item-action bg-info text-dark d-flex align-items-center">
-            <i class="fas fa-chart-bar me-2"></i> <span>تقارير الشهادات</span>
-        </a>
-        <a href="{{ route('employees.index') }}" class="list-group-item list-group-item-action bg-info text-dark d-flex align-items-center">
-            <i class="fas fa-user-tie me-2"></i> <span>إدارة الموظفين</span>
-        </a>
-        <a href="{{ route('admin.users.index') }}" class="list-group-item list-group-item-action bg-info text-dark d-flex align-items-center">
-            <i class="fas fa-users-cog me-2"></i> <span>إدارة المستخدمين</span>
-        </a>
-    </div>
+<div class="list-group list-group-flush">
+    <a href="{{ route('placemarks.upload') }}" class="list-group-item">
+        ادخال اكسيل
+    </a>
+
+    <a href="{{ route('manual.choose') }}" class="list-group-item">
+        ادخال يدوي
+    </a>
+
+    <a href="{{ route('certificates.search.form') }}" class="list-group-item">
+        بحث
+    </a>
+
+    <a href="{{ route('tracking_certificates.review', ['status' => 'pending']) }}" class="list-group-item">
+        مراجعة الشهادات
+    </a>
+
+    <a href="{{ route('tracking_certificates.delivery', ['status' => 'delivered']) }}" class="list-group-item">
+        خدمة العملاء للتسليم
+    </a>
+
+    <a href="{{ route('tracking_certificates.stifaa') }}" class="list-group-item">
+        استيفاء الشهادات
+    </a>
+
+    <a href="{{ route('transactions.index') }}" class="list-group-item">
+        الشهادات
+    </a>
+
+    <a href="{{ route('reports.index') }}" class="list-group-item">
+        تقارير الشهادات
+    </a>
+
+    <a href="{{ route('employees.index') }}" class="list-group-item">
+        إدارة الموظفين
+    </a>
+
+    <a href="{{ route('admin.users.index') }}" class="list-group-item">
+        إدارة المستخدمين
+    </a>
+</div>
 
     <div class="mt-auto p-3 border-top">
         <form action="{{ route('logout') }}" method="POST">
@@ -87,6 +96,7 @@
     </div>
 </div>
 
+
   {{-- 🔹 Main Content --}}
   <div class="content container py-4">
       @if(session('success'))
@@ -96,9 +106,6 @@
           <div class="alert alert-danger">{{ session('error') }}</div>
       @endif
 
-      <a href="{{ url()->previous() }}" class="btn btn-outline-primary mb-3">
-          <i class="fas fa-arrow-left"></i> الرجوع
-      </a>
 
       @yield('content')
 
@@ -114,6 +121,19 @@
       sidebar.classList.toggle('collapsed');
       content.style.marginRight = sidebar.classList.contains('collapsed') ? '70px' : '250px';
     });
+
+
+    <script>
+    document.querySelectorAll('.table tbody tr').forEach(row => {
+        row.addEventListener('click', () => {
+            // إزالة التحديد من الصفوف الأخرى
+            document.querySelectorAll('.table tbody tr').forEach(r => r.classList.remove('selected'));
+            // تفعيل التحديد على الصف الحالي
+            row.classList.add('selected');
+        });
+    });
+</script>
+
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

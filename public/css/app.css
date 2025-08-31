@@ -9,8 +9,8 @@ body {
 /* الشريط العلوي */
 .topbar {
     height: 60px;
-    background: linear-gradient(90deg, #0d6efd 0%, #0056b3 100%);
-    color: white;
+    background: linear-gradient(90deg, #1E3A8A 0%, #2563EB 100%);
+    color: #F9FAFB;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -20,30 +20,21 @@ body {
     right: 0;
     left: 0;
     z-index: 1100;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+    transition: background 0.3s ease;
 }
 
-.topbar .logo {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.topbar .logo .logo-item img {
-    height: 40px;
-    object-fit: contain;
-    border-radius: 5px;
+.topbar:hover {
+    background: linear-gradient(90deg, #1D4ED8 0%, #3B82F6 100%);
 }
 
 .topbar .logo .logo-item div {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    font-size: 0.9rem;
+    font-size: 1.3rem;
     font-weight: bold;
-    color: white;
+    color: #F9FAFB;
+    letter-spacing: 1px;
 }
 
 .topbar-center {
@@ -51,72 +42,85 @@ body {
     left: 50%;
     transform: translateX(-50%);
     font-weight: bold;
-    color: #fff;
-    font-size: 1.1rem;
+    color: #FACC15;
+    font-size: 1.2rem;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.3);
 }
+
 
 .topbar .actions i {
     cursor: pointer;
-    font-size: 1.4rem;
-    color: white;
+    font-size: 1.5rem;
+    color: #F9FAFB;
+    transition: transform 0.3s ease, color 0.3s ease;
 }
+
+.topbar .actions i:hover {
+    transform: scale(1.2);
+    color: #FACC15;
+}
+
+/* الـ Sidebar */
 .sidebar {
     position: fixed;
     width: 260px;
-    background: linear-gradient(180deg, #2563EB 0%, #3B82F6 100%); /* أزرق فاتح جذاب */
+    background: linear-gradient(180deg, #1E3A8A 0%, #2563EB 100%);
     height: 100vh;
-    top: 60px; /* أسفل الشريط العلوي */
+    top: 60px;
     right: 0;
-    padding-top: 20px;
+    padding-top: 25px;
     z-index: 1000;
     transition: width 0.3s ease, background 0.3s ease;
     overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
-    border-radius: 0 15px 15px 0;
+    box-shadow: -3px 0 15px rgba(0,0,0,0.2);
+    border-radius: 0 18px 18px 0;
 }
 
 .sidebar h4 {
-    color: #FACC15; /* أصفر ذهبي جذاب */
+    color: #FACC15;
     padding: 0 20px;
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     font-weight: bold;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
     text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .sidebar a {
     display: flex;
     align-items: center;
-    padding: 12px 20px;
-    color: #E0E7FF; /* أبيض أزرقish */
+    padding: 14px 20px;
+    color: #F9FAFB;
     text-decoration: none;
     transition: all 0.3s ease;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    border-radius: 8px;
-    margin: 0 10px 8px 10px;
+    border-radius: 10px;
+    margin: 0 12px 10px 12px;
     font-weight: 500;
+    font-size: 1.3rem;
 }
 
 .sidebar a i {
-    margin-left: 12px; 
-    font-size: 1.3rem; 
-    width: 25px;
+    margin-left: 14px; 
+    font-size: 1.4rem; 
+    width: 28px;
     text-align: center;
-    color: #FACC15; /* خلي لون الأيقونات ذهبي بدل الأسود */
+    color: #FACC15;
 }
+
 .sidebar a:hover {
-    background-color: #60A5FA; /* أزرق فاتح عند hover */
-    color: #fff;
+    background: rgba(250, 204, 21, 0.15);
+    color: #FACC15;
     font-weight: bold;
-    transform: scale(1.02);
+    transform: translateX(-5px);
 }
 
 .sidebar a.active {
-    background-color: #FACC15; /* ذهبي */
-    color: #1E3A8A; /* نص أزرق داكن */
+    background: #FACC15;
+    color: #1E3A8A;
+    font-weight: bold;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
 }
+
 .sidebar.collapsed a span { display: none; }
 
 /* محتوى الصفحة */
@@ -129,14 +133,16 @@ body {
     border-radius: 20px;
     box-shadow: 0 6px 25px rgba(0,0,0,0.1);
     max-width: calc(100% - 280px);
+    margin-top: 50px;
 }
 
 .sidebar.collapsed ~ .content { margin-right: 70px; }
 
+/* عناصر القائمة */
 .list-group-item {
-    background-color: #2563EB; /* أزرق جذاب */
-    color: #E0E7FF; /* نص فاتح */
-    border: none; /* إزالة الحدود الافتراضية */
+    background: linear-gradient(180deg, #2563EB 0%, #3B82F6 100%);
+    color: #F9FAFB;
+    border: none;
     border-radius: 8px;
     margin-bottom: 8px;
     padding: 12px 20px;
@@ -150,18 +156,18 @@ body {
 .list-group-item i {
     margin-left: 12px;
     font-size: 1.3rem;
-    color: #FACC15; /* أيقونات ذهبية جذابة */
+    color: #FACC15;
 }
 
 .list-group-item:hover {
-    background-color: #3B82F6; /* أزرق فاتح عند hover */
+    background-color: #1E3A8A;
     color: #fff;
     transform: scale(1.02);
 }
 
 .list-group-item.active {
-    background-color: #FACC15; /* خلفية ذهبي للرابط النشط */
-    color: #1E3A8A; /* نص أزرق داكن */
+    background-color: #FACC15;
+    color: #1E3A8A;
     font-weight: bold;
 }
 
@@ -169,17 +175,13 @@ body {
     outline: none;
     box-shadow: none;
 }
-/* محتوى الصفحة */
-.content {
-    margin-right: 260px;
-    padding: 100px 50px 50px 50px;
-    transition: margin-right 0.3s ease;
-    min-height: 100vh;
-    background-color: #fff;
-    border-radius: 20px;
-    box-shadow: 0 6px 25px rgba(0,0,0,0.1);
-    max-width: calc(100% - 280px);
+.table-hover tbody tr:hover {
+    background-color: #e2f0ff; /* أزرق فاتح */
+    cursor: pointer;
 }
 
-/* عند Collapse */
-.sidebar.collapsed ~ .content { margin-right: 70px; }
+/* الصف المحدد */
+.table tbody tr.selected {
+    background-color: #b3d7ff; /* أزرق داكن أكثر عند تحديده */
+}
+

@@ -3,22 +3,71 @@
 @section('content')
 <div class="container">
     <h3>📊 تقارير الشهادات</h3>
-
 <form method="GET" action="{{ route('reports.index') }}">
-    <input type="text" name="client_name" placeholder="اسم العميل" value="{{ request('client_name') }}">
-    <input type="date" name="from" value="{{ request('from') }}">
-    <input type="date" name="to" value="{{ request('to') }}">
-    <input type="text" name="inspector_name" placeholder="عمل ميداني" value="{{ request('inspector_name') }}">
-    <input type="text" name="gis_preparer_name" placeholder="معد GIS" value="{{ request('gis_preparer_name') }}">
-    <input type="text" name="gis_reviewer_name" placeholder="مراجع GIS" value="{{ request('gis_reviewer_name') }}">
-    
-    <button type="submit">بحث</button>
-    <a href="{{ route('reports.export', request()->all()) }}" class="btn btn-success">⬇️ تصدير Excel</a>
+
+
+    {{-- من تاريخ --}}
+    <div class="mb-3">
+        <label for="from" class="form-label">من تاريخ</label>
+        <input type="date" id="from" name="from" class="form-control" value="{{ request('from') }}">
+    </div>
+
+    {{-- إلى تاريخ --}}
+    <div class="mb-3">
+        <label for="to" class="form-label">إلى تاريخ</label>
+        <input type="date" id="to" name="to" class="form-control" value="{{ request('to') }}">
+    </div>
+
+    {{-- القائم بالمتابعة --}}
+    <div class="mb-3">
+        <label for="inspector_name" class="form-label">اسم القائم بالمتابعة</label>
+        <select id="inspector_name" name="inspector_name" class="form-control">
+            <option value="">اختر الاسم</option>
+            @foreach(\App\Models\Employee::where('role','inspector')->get() as $emp)
+                <option value="{{ $emp->name }}" {{ request('inspector_name') == $emp->name ? 'selected' : '' }}>
+                    {{ $emp->name }}
+                </option>
+            @endforeach
+        </select>
+    </div>
+
+    {{-- GIS إعداد --}}
+    <div class="mb-3">
+        <label for="gis_preparer_name" class="form-label">اسم مسؤول GIS إعداد</label>
+        <select id="gis_preparer_name" name="gis_preparer_name" class="form-control">
+            <option value="">اختر الموظف</option>
+            @foreach(\App\Models\Employee::where('role','gis_preparer')->get() as $emp)
+                <option value="{{ $emp->name }}" {{ request('gis_preparer_name') == $emp->name ? 'selected' : '' }}>
+                    {{ $emp->name }}
+                </option>
+            @endforeach
+        </select>
+    </div>
+
+    {{-- GIS مراجعة --}}
+    <div class="mb-3">
+        <label for="gis_reviewer_name" class="form-label">اسم مسؤول GIS مراجعة</label>
+        <select id="gis_reviewer_name" name="gis_reviewer_name" class="form-control">
+            <option value="">اختر الموظف</option>
+            @foreach(\App\Models\Employee::where('role','gis_reviewer')->get() as $emp)
+                <option value="{{ $emp->name }}" {{ request('gis_reviewer_name') == $emp->name ? 'selected' : '' }}>
+                    {{ $emp->name }}
+                </option>
+            @endforeach
+        </select>
+    </div>
+
+    {{-- أزرار البحث والتصدير --}}
+    <div class="mb-3 d-flex gap-2">
+        <button type="submit" class="btn btn-primary">بحث</button>
+        <a href="{{ route('reports.export', request()->all()) }}" class="btn btn-success">⬇️ تصدير Excel</a>
+    </div>
 </form>
 
 
 
-    <table class="table table-bordered">
+
+    <table class="table table-bordered table-hover text-center align-middle">
         <thead>
             <tr>
                 <th>#</th>
