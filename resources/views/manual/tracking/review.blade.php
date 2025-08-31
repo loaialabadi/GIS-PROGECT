@@ -22,6 +22,8 @@
                     <th>اسم العميل</th>
                     <th>الحالة</th>
                     <th>الملاحظات</th>
+                     <th>مدخل الحاله</th>
+
                     <th>المركز</th>
                     <th>الإجراء</th>
                 </tr>
@@ -38,6 +40,8 @@
                             </span>
                         </td>
                         <td>{{ $certificate->notes }}</td>
+                        <td>{{ $certificate->gis_preparer_name }}</td>
+
                         <td>{{ $certificate->center_name}}</td>
                         <td>
                             <div class="btn-group mb-1">

@@ -350,4 +350,17 @@ class TrackingCertificateController extends Controller
 
         return view('transactions.index', compact('certificates'));
     }
+
+
+    public function destroy($id)
+{
+    // الحصول على السجل
+    $certificate = TrackingCertificate::findOrFail($id);
+    
+    // حذف السجل
+    $certificate->delete();
+    
+    // إعادة توجيه مع رسالة نجاح
+    return redirect()->route('tracking_certificates.all')->with('success', 'تم حذف الشهادة بنجاح');
+}
 }

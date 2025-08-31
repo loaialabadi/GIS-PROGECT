@@ -179,6 +179,11 @@ Route::get('/reports/export', [ReportController::class, 'export'])->name('report
 Route::resource('employees', EmployeeController::class);
     });
 
+
+    // في ملف routes/web.php
+Route::delete('/tracking-certificates/{id}', [TrackingCertificateController::class, 'destroy'])->name('tracking_certificates.destroy');
+
+
 });
 
 /*

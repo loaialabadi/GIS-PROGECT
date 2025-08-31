@@ -92,7 +92,7 @@
     <select id="inspector_name" name="inspector_name" class="form-control">
         <option value="">اختر الاسم</option>
         @foreach(\App\Models\Employee::where('role','inspector')->get() as $emp)
-            <option value="{{ $emp->name }}" {{ old('inspector_name') == $emp->name ? 'selected' : '' }}>
+            <option value="{{ $emp->id }}" {{ old('inspector_name') == $emp->id ? 'selected' : '' }}>
                 {{ $emp->name }}
             </option>
         @endforeach
