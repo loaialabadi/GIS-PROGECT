@@ -352,15 +352,31 @@ class TrackingCertificateController extends Controller
     }
 
 
-    public function destroy($id)
+
+
+public function destroy($id)
 {
-    // الحصول على السجل
-    $certificate = TrackingCertificate::findOrFail($id);
-    
-    // حذف السجل
-    $certificate->delete();
-    
-    // إعادة توجيه مع رسالة نجاح
-    return redirect()->route('tracking_certificates.all')->with('success', 'تم حذف الشهادة بنجاح');
+    $certificate = TrackingCertificate::find($id);
+
+    if ($certificate) {
+        // الحصول على رقم المعاملة
+        $transactionNumber = $certificate->transaction_number;
+
+        // المسار إلى مجلد الصورة داخل storage
+        $directoryPath = storage_path('app/public/certificates/temp/' . $transactionNumber);
+
+        // التحقق من وجود المجلد وحذفه
+        if (File::exists($directoryPath)) {
+            File::deleteDirectory($directoryPath); // حذف المجلد
+        }
+
+        // حذف السجل من قاعدة البيانات
+        $certificate->delete();
+
+        return redirect()->route('tracking_certificates.all')->with('success', 'تم الحذف بنجاح');
+    }
+
+    return redirect()->route('tracking_certificates.all')->with('error', 'لم يتم العثور على الشهادة');
 }
+
 }

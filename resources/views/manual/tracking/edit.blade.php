@@ -87,17 +87,7 @@
         </div>
 
 
-<div class="mb-3">
-    <label for="inspector_name" class="form-label">اسم القائم بالمتابعة</label>
-    <select id="inspector_name" name="inspector_name" class="form-control">
-        <option value="">اختر الاسم</option>
-        @foreach(\App\Models\Employee::where('role','inspector')->get() as $emp)
-            <option value="{{ $emp->id }}" {{ old('inspector_name') == $emp->id ? 'selected' : '' }}>
-                {{ $emp->name }}
-            </option>
-        @endforeach
-    </select>
-</div>
+
 
 <h5>تعدي وصف المتابعة لكل تاريخ موجود:</h5>
 @php
@@ -124,6 +114,17 @@
 
 
 <h5>بيانات GIS</h5>
+<div class="mb-3">
+    <label for="inspector_name" class="form-label">اسم القائم بالمتابعة</label>
+    <select id="inspector_name" name="inspector_name" class="form-control">
+        <option value="">اختر الاسم</option>
+        @foreach(\App\Models\Employee::where('role','inspector')->get() as $emp)
+            <option value="{{ $emp->id }}" {{ old('inspector_name') == $emp->id ? 'selected' : '' }}>
+                {{ $emp->name }}
+            </option>
+        @endforeach
+    </select>
+</div>
 
 <div class="mb-3">
     <label for="gis_preparer_name" class="form-label">اسم مسؤول GIS إعداد</label>

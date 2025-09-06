@@ -20,7 +20,7 @@
                     <th>#</th>
                     <th>رقم المعاملة</th>
                     <th>اسم العميل</th>
-                    <th>الحالة</th>
+                    <th>القائم بالرفع</th>
                     <th>الملاحظات</th>
                      <th>مدخل الحاله</th>
 
@@ -36,7 +36,7 @@
                         <td>{{ $certificate->client_name}}</td>
                         <td>
                             <span id="status-{{ $certificate->id }}">
-                                {{ $certificate->delivery_status }}
+                                {{ $certificate->inspector_name }}
                             </span>
                         </td>
                         <td>{{ $certificate->notes }}</td>

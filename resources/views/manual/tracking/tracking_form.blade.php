@@ -93,25 +93,18 @@
             <textarea id="notes" name="notes" class="form-control">{{ old('notes') }}</textarea>
         </div>
 
-<div class="mb-3">
-    <label for="inspector_name" class="form-label">اسم القائم بالمتابعة</label>
-    <select id="inspector_name" name="inspector_name" class="form-control">
-        <option value="">اختر الاسم</option>
-        @foreach(\App\Models\Employee::where('role','inspector')->get() as $emp)
-            <option value="{{ $emp->name }}" {{ old('inspector_name') == $emp->name ? 'selected' : '' }}>
-                {{ $emp->name }}
-            </option>
-        @endforeach
-    </select>
-</div>
+
 
 
         <!-- حقول حالة التتبع 5 -->
 @php
     $availableDates = [
+        '8-2002',
         '5-2004',
+        '3-2005',
         '9-2009',
         '2-2011',
+        '5-2014',
         '4-2015',
         '7-2016',
         '7-2017',
@@ -165,6 +158,17 @@
 
         <!-- بيانات GIS -->
 <h5>بيانات GIS</h5>
+<div class="mb-3">
+    <label for="inspector_name" class="form-label">اسم القائم بالمتابعة</label>
+    <select id="inspector_name" name="inspector_name" class="form-control">
+        <option value="">اختر الاسم</option>
+        @foreach(\App\Models\Employee::where('role','inspector')->get() as $emp)
+            <option value="{{ $emp->name }}" {{ old('inspector_name') == $emp->name ? 'selected' : '' }}>
+                {{ $emp->name }}
+            </option>
+        @endforeach
+    </select>
+</div>
 
 <div class="mb-3">
     <label for="gis_preparer_name" class="form-label">اسم مسؤول GIS إعداد</label>

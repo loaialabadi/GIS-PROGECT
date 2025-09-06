@@ -159,7 +159,23 @@
   }
 
 
+    .btn-colored {
+        background: linear-gradient(135deg, #fbb034, #00ff6e); /* تدرج لوني جذاب */
+        color: #111;
+        font-weight: bold;
+        padding: 10px 24px;
+        border: none;
+        border-radius: 50px; /* شكل كبسولة */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        transition: all 0.3s ease;
+    }
 
+    .btn-colored:hover {
+        background: linear-gradient(135deg, #ffdd00, #3437fb); /* عكس التدرج عند التحويم */
+        transform: scale(1.05); /* تكبير بسيط */
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+        color: #000;
+    }
 
 
 </style>
@@ -312,8 +328,9 @@
                 top: -25px;
                 left: 50%;
                 transform: translateX(-50%);
-                background-color: rgba(0, 0, 0, 0.7);
-                color: white;
+background-color: #fde5a6;
+color: rgb(15, 15, 15);
+
                 padding: 3px 10px;
                 border-radius: 5px;
                 font-weight: bold;
@@ -341,8 +358,9 @@
 </div>
 
 
-<button onclick="saveCertificate()" class="btn btn-success">
-    🖼 حفظ الشهادة كصورة
+<button onclick="saveCertificate()" class="btn-colored d-flex align-items-center gap-2">
+    <span style="font-size: 1.2rem;">🖼</span>
+    <span>حفظ الشهادة كصورة</span>
 </button>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>

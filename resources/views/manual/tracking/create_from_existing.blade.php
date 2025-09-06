@@ -51,6 +51,24 @@
             html, body { width: auto; height: auto; }
             .container { box-shadow: none !important; border: none !important; padding: 0 !important; margin: 0 auto !important; max-width: 100%; }
         }
+
+            .btn-colored {
+        background: linear-gradient(135deg, #fbb034, #00ff6e); /* تدرج لوني جذاب */
+        color: #111;
+        font-weight: bold;
+        padding: 10px 24px;
+        border: none;
+        border-radius: 50px; /* شكل كبسولة */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        transition: all 0.3s ease;
+    }
+
+    .btn-colored:hover {
+        background: linear-gradient(135deg, #ffdd00, #3437fb); /* عكس التدرج عند التحويم */
+        transform: scale(1.05); /* تكبير بسيط */
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+        color: #000;
+    }
     </style>
 </head>
 <body>
@@ -120,12 +138,18 @@
         <strong>التوقيع:.........</strong> {{ $data['customer_service_sign'] ?? '' }}
       </div>
     </td>
-    <td>
-      <div><strong>الاسم:</strong> {{ $data['inspector_name'] ?? '' }}</div><br>
-      <div style="border-top: 1px solid #000; margin-top: 10px;">
-        <strong>التوقيع:..........</strong> {{ $data['field_survey_sign'] ?? '' }}
-      </div>
-    </td>
+<td>
+  @php
+    use App\Models\Employee;
+    $inspector = Employee::find($data['inspector_name']);
+  @endphp
+
+  <div><strong>الاسم:</strong> {{ $inspector->name ?? '' }}</div><br>
+  <div style="border-top: 1px solid #000; margin-top: 10px;">
+    <strong>التوقيع:..........</strong> {{ $data['field_survey_sign'] ?? '' }}
+  </div>
+</td>
+
     <!-- GIS - إعداد -->
     <td>
       <div><strong>الإعداد</strong></div><br>
@@ -182,8 +206,9 @@
                         top: -25px;
                         left: 50%;
                         transform: translateX(-50%);
-                        background-color: rgba(0, 0, 0, 0.7);
-                        color: white;
+background-color: #fde5a6;
+color: rgb(15, 15, 15);
+
                         padding: 3px 10px;
                         border-radius: 5px;
                         font-weight: bold;
@@ -210,12 +235,13 @@
 </div>
 
 
-
-
-
-<button onclick="saveCertificate()" class="btn btn-success">
-    🖼 حفظ الشهادة كصورة
+<button onclick="saveCertificate()" class="btn-colored d-flex align-items-center gap-2">
+    <span style="font-size: 1.2rem;">🖼</span>
+    <span>حفظ الشهادة كصورة</span>
 </button>
+
+
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
 function saveCertificate() {

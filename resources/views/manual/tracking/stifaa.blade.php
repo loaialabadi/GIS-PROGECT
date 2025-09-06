@@ -22,7 +22,7 @@
                     <th>اسم العميل</th>
                     <th>الحالة</th>
                     <th>الملاحظات</th>
-                    <th>تاريخ الإنشاء</th>
+                    <th>المراجع</th>
                     <th>الإجراء</th>
                 </tr>
             </thead>
@@ -47,7 +47,7 @@
                             </span>
                         </td>
                         <td>{{ $certificate->notes }}</td>
-                        <td>{{ $certificate->created_at }}</td>
+                        <td>{{ $certificate->gis_reviewer_name }}</td>
                         <td>
                             <div class="btn-group flex-wrap">
                                 <a href="{{ route('tracking_certificates.edit', $certificate->id) }}" class="btn btn-warning btn-sm mb-1">

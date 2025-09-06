@@ -83,13 +83,13 @@
                                 تسليم للعميل
                             </button>
 
-                                  <form action="{{ route('tracking_certificates.destroy', $certificate->id) }}" method="POST" style="display:inline;">
-            @csrf
-            @method('DELETE')
-            <button type="submit" class="btn btn-danger btn-sm mb-1" onclick="return confirm('هل أنت متأكد من حذف هذه المعاملة؟')">
-                🗑 حذف
-            </button>
-        </form>
+<form action="{{ route('tracking_certificates.destroy', $certificate->id) }}" method="POST" style="display:inline;">
+    @csrf
+    @method('DELETE')
+    <button type="submit" class="btn btn-danger btn-sm mb-1" onclick="return confirm('هل أنت متأكد من حذف هذه المعاملة؟')">
+        🗑 حذف
+    </button>
+</form>
                             
                         </div>
                     </td>
