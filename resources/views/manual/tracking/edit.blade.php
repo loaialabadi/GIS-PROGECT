@@ -116,26 +116,27 @@
 <h5>بيانات GIS</h5>
 <div class="mb-3">
     <label for="inspector_name" class="form-label">اسم القائم بالمتابعة</label>
-    <select id="inspector_name" name="inspector_name" class="form-control">
-        <option value="">اختر الاسم</option>
-        @foreach(\App\Models\Employee::where('role','inspector')->get() as $emp)
-            <option value="{{ $emp->id }}" {{ old('inspector_name') == $emp->id ? 'selected' : '' }}>
-                {{ $emp->name }}
-            </option>
-        @endforeach
-    </select>
+<select id="inspector_name" name="inspector_name" class="form-control">
+    <option value="">اختر الاسم</option>
+    @foreach(\App\Models\Employee::where('role','inspector')->get() as $emp)
+        <option value="{{ $emp->id }}" {{ old('inspector_name', $certificate->inspector_name) == $emp->id ? 'selected' : '' }}>
+            {{ $emp->name }}
+        </option>
+    @endforeach
+</select>
 </div>
 
 <div class="mb-3">
     <label for="gis_preparer_name" class="form-label">اسم مسؤول GIS إعداد</label>
-    <select id="gis_preparer_name" name="gis_preparer_name" class="form-control">
-        <option value="">اختر الموظف</option>
-        @foreach(\App\Models\Employee::where('role','gis_preparer')->get() as $emp)
-            <option value="{{ $emp->name }}" {{ old('gis_preparer_name') == $emp->name ? 'selected' : '' }}>
-                {{ $emp->name }}
-            </option>
-        @endforeach
-    </select>
+<select id="gis_preparer_name" name="gis_preparer_name" class="form-control">
+    <option value="">اختر الموظف</option>
+    @foreach(\App\Models\Employee::where('role','gis_preparer')->get() as $emp)
+        <option value="{{ $emp->id }}" {{ old('gis_preparer_name', $certificate->gis_preparer_name) == $emp->id ? 'selected' : '' }}>
+            {{ $emp->name }}
+        </option>
+    @endforeach
+</select>
+
 </div>
 
 <div class="mb-3">
@@ -143,7 +144,7 @@
     <select id="gis_reviewer_name" name="gis_reviewer_name" class="form-control">
         <option value="">اختر الموظف</option>
         @foreach(\App\Models\Employee::where('role','gis_reviewer')->get() as $emp)
-            <option value="{{ $emp->name }}" {{ old('gis_reviewer_name') == $emp->name ? 'selected' : '' }}>
+            <option value="{{ $emp->id }}" {{ old('gis_reviewer_name', $certificate->gis_reviewer_name) == $emp->id ? 'selected' : '' }}>
                 {{ $emp->name }}
             </option>
         @endforeach

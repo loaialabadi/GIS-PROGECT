@@ -34,13 +34,13 @@
                         <td>{{ $certificate->id }}</td>
                         <td>{{ $certificate->transaction_number }}</td>
                         <td>{{ $certificate->client_name}}</td>
-                        <td>
-                            <span id="status-{{ $certificate->id }}">
-                                {{ $certificate->inspector_name }}
-                            </span>
-                        </td>
+<td>
+    <span id="status-{{ $certificate->id }}">
+        {{ $certificate->inspector ? $certificate->inspector->name : 'غير معروف' }}
+    </span>
+</td>
                         <td>{{ $certificate->notes }}</td>
-                        <td>{{ $certificate->gis_preparer_name }}</td>
+<td>{{ $certificate->gisPreparer ? $certificate->gisPreparer->name : 'غير معروف' }}</td>
 
                         <td>{{ $certificate->center_name}}</td>
                         <td>

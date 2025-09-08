@@ -55,6 +55,21 @@ public function transaction()
     return $this->belongsTo(Transaction::class);
 }
 
+// في الموديل Certificate مثلا
+public function inspector()
+{
+    return $this->belongsTo(Employee::class, 'inspector_name');
+}
+
+public function gisPreparer()
+{
+    return $this->belongsTo(Employee::class, 'gis_preparer_name');
+}
+
+public function gisReviewer()
+{
+    return $this->belongsTo(Employee::class, 'gis_reviewer_name');
+}
 
 
 }

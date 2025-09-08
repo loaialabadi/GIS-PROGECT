@@ -153,15 +153,17 @@
     <!-- GIS - إعداد -->
     <td>
       <div><strong>الإعداد</strong></div><br>
-      <div><strong>الاسم:</strong> {{ $data['gis_preparer_name'] ?? '' }}</div><br>
+      <div><strong>الاسم:</strong> {{ $data->gis_preparer_name_text }}</div><br>
       <div style="border-top: 1px solid #000; margin-top: 10px;">
         <strong>التوقيع:.........</strong> 
       </div>
     </td>
     <!-- GIS - مراجعة -->
     <td>
+       
+
       <div><strong>المراجعة</strong></div><br>
-      <div><strong>الاسم:</strong> {{ $data['gis_reviewer_name'] ?? '' }}</div><br>
+      <div><strong>الاسم:</strong> {{ $data->gis_reviewer_name_text }}</div><br>
       <div style="border-top: 1px solid #000; margin-top: 10px;">
         <strong>التوقيع:.........</strong> 
       </div>

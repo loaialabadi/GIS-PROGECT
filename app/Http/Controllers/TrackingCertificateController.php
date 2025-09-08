@@ -218,19 +218,45 @@ class TrackingCertificateController extends Controller
         return back()->with('success', 'تم حذف الصورة بنجاح');
     }
 
-    public function createFromExisting($id)
-    {
-        $certificate = TrackingCertificate::findOrFail($id);
+public function createFromExisting($id)
+{
+    $certificate = TrackingCertificate::findOrFail($id);
 
-        $trackingStatus = is_string($certificate->tracking_status)
-            ? json_decode($certificate->tracking_status, true)
-            : $certificate->tracking_status;
+    $trackingStatus = is_string($certificate->tracking_status)
+        ? json_decode($certificate->tracking_status, true)
+        : $certificate->tracking_status;
 
-        return view('manual.tracking.create_from_existing', [
-            'data' => $certificate,
-            'trackingStatus' => $trackingStatus,
-        ]);
+    // جلب أسماء الموظفين بناءً على الـ IDs المخزنة في الشهادة
+    $inspectorName = null;
+    $gisPreparerName = null;
+    $gisReviewerName = null;
+
+    if ($certificate->inspector_name) {
+        $inspector = \App\Models\Employee::find($certificate->inspector_name);
+        $inspectorName = $inspector ? $inspector->name : null;
     }
+
+    if ($certificate->gis_preparer_name) {
+        $preparer = \App\Models\Employee::find($certificate->gis_preparer_name);
+        $gisPreparerName = $preparer ? $preparer->name : null;
+    }
+
+    if ($certificate->gis_reviewer_name) {
+        $reviewer = \App\Models\Employee::find($certificate->gis_reviewer_name);
+        $gisReviewerName = $reviewer ? $reviewer->name : null;
+    }
+
+    // بدل ما تمرر الـ certificate مباشرة، ممكن تمرر البيانات مع تعديل الأسماء
+$certificate->inspector_name_text = $inspectorName;
+$certificate->gis_preparer_name_text = $gisPreparerName;
+$certificate->gis_reviewer_name_text = $gisReviewerName;
+
+return view('manual.tracking.create_from_existing', [
+    'data' => $certificate,
+    'trackingStatus' => $trackingStatus,
+]);
+}
+
 
     public function storeFromExisting(Request $request)
     {
@@ -244,9 +270,9 @@ class TrackingCertificateController extends Controller
             'center_name' => 'nullable|string|max:255',
             'area' => 'nullable|string|max:255',
             'notes' => 'nullable|string',
-            'gis_preparer_name' => 'nullable|string|max:255',
-            'gis_reviewer_name' => 'nullable|string|max:255',
-            'inspector_name' => 'nullable|string|max:255',
+'gis_preparer_name' => 'nullable|integer|exists:employees,id',
+'gis_reviewer_name' => 'nullable|integer|exists:employees,id',
+'inspector_name' => 'nullable|integer|exists:employees,id',
             'tracking_status' => 'nullable|array',
             'certificate_file' => 'nullable|image|max:2048',
         ]);
