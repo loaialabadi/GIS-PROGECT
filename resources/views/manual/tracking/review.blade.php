@@ -13,7 +13,7 @@
         <a href="{{ route('tracking.review') }}" class="btn btn-secondary ms-2">عرض الكل</a>
     </form>
 
-    @if(count($certificates) > 0)
+    @if($certificates->count() > 0)
         <table class="table table-bordered table-hover text-center align-middle">
             <thead class="table-light">
                 <tr>
@@ -22,8 +22,7 @@
                     <th>اسم العميل</th>
                     <th>القائم بالرفع</th>
                     <th>الملاحظات</th>
-                     <th>مدخل الحاله</th>
-
+                    <th>مدخل الحالة</th>
                     <th>المركز</th>
                     <th>الإجراء</th>
                 </tr>
@@ -33,22 +32,38 @@
                     <tr>
                         <td>{{ $certificate->id }}</td>
                         <td>{{ $certificate->transaction_number }}</td>
-                        <td>{{ $certificate->client_name}}</td>
-<td>
-    <span id="status-{{ $certificate->id }}">
-        {{ $certificate->inspector ? $certificate->inspector->name : 'غير معروف' }}
-    </span>
-</td>
-                        <td>{{ $certificate->notes }}</td>
-<td>{{ $certificate->gisPreparer ? $certificate->gisPreparer->name : 'غير معروف' }}</td>
+                        <td>{{ $certificate->client_name }}</td>
 
-                        <td>{{ $certificate->center_name}}</td>
+                        {{-- المفتش --}}
+                        @php
+                            $inspectorName = is_numeric($certificate->inspector_name)
+                                ? App\Models\Employee::find($certificate->inspector_name)?->name
+                                : $certificate->inspector_name;
+                            $inspectorName = $inspectorName ?? 'غير معروف';
+                        @endphp
+                        <td>{{ $inspectorName }}</td>
+
+                        {{-- الملاحظات --}}
+                        <td>{{ $certificate->notes ?? 'لا توجد ملاحظات' }}</td>
+
+                        {{-- GIS Preparer --}}
+                        @php
+                            $gisPreparerName = is_numeric($certificate->gis_preparer_name)
+                                ? App\Models\Employee::find($certificate->gis_preparer_name)?->name
+                                : $certificate->gis_preparer_name;
+                            $gisPreparerName = $gisPreparerName ?? 'غير معروف';
+                        @endphp
+                        <td>{{ $gisPreparerName }}</td>
+
+                        {{-- المركز --}}
+                        <td>{{ $certificate->center_name ?? '-' }}</td>
+
+                        {{-- الإجراءات --}}
                         <td>
                             <div class="btn-group mb-1">
                                 <a href="{{ route('tracking_certificates.edit', $certificate->id) }}" class="btn btn-warning btn-sm">
                                     تعديل بيانات
                                 </a>
-
                                 <button class="btn btn-primary btn-sm" onclick="updateStatus({{ $certificate->id }}, 2)">
                                     استيفاء
                                 </button>

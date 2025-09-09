@@ -55,20 +55,21 @@ public function transaction()
     return $this->belongsTo(Transaction::class);
 }
 
-// في الموديل Certificate مثلا
-public function inspector()
+public function inspectorRelation()
 {
-    return $this->belongsTo(Employee::class, 'inspector_name');
+    return $this->hasOne(Employee::class, 'id', 'inspector_name');
 }
 
-public function gisPreparer()
+// علاقة معدّل GIS (مؤقت لو العمود فيه ID لكن اسمه _name)
+public function gisPreparerRelation()
 {
-    return $this->belongsTo(Employee::class, 'gis_preparer_name');
+    return $this->hasOne(Employee::class, 'id', 'gis_preparer_name');
 }
 
-public function gisReviewer()
+// علاقة المراجع GIS (مؤقت لو العمود فيه ID لكن اسمه _name)
+public function gisReviewerRelation()
 {
-    return $this->belongsTo(Employee::class, 'gis_reviewer_name');
+    return $this->hasOne(Employee::class, 'id', 'gis_reviewer_name');
 }
 
 

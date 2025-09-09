@@ -47,7 +47,16 @@
                             </span>
                         </td>
                         <td>{{ $certificate->notes }}</td>
-                        <td>{{ $certificate->gis_reviewer_name }}</td>
+@php
+$gisReviewerName = is_numeric($certificate->gis_reviewer_name)
+    ? App\Models\Employee::find($certificate->gis_reviewer_name)?->name
+    : $certificate->gis_reviewer_name;
+
+$gisReviewerName = $gisReviewerName ?? 'غير معروف';
+@endphp
+
+<td>{{ $gisReviewerName }}</td>
+
                         <td>
                             <div class="btn-group flex-wrap">
                                 <a href="{{ route('tracking_certificates.edit', $certificate->id) }}" class="btn btn-warning btn-sm mb-1">
