@@ -213,6 +213,10 @@
   <tr><td>اسم العميل</td><td>{{ $data['client_name'] ?? '' }}</td></tr>
   <tr><td>الرقم القومي</td><td>{{ $data['national_id'] ?? '' }}</td></tr>
     <tr><td>المركز</td><td>{{ $data['center_name'] ?? '' }}</td></tr>
+    
+        <tr><td>المنطقه</td><td>{{ $data['area'] ?? '' }}</td></tr>
+
+
     <tr><td>رقم المعاملة</td><td>{{ $data['transaction_number'] ?? '' }}</td></tr>
   <tr><td>الغرض من الشهادة</td><td>{{ $data['purpose'] ?? '' }}</td></tr>
   <tr><td>الاحداثي</td><td>{{ $data['coordinates'] ?? '' }}</td></tr>
